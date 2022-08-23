@@ -1,23 +1,18 @@
-import json
-
 from django.db import connection
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.http import HttpRequest, JsonResponse, HttpResponseNotFound, HttpResponse, Http404
 
+from application.pagination import BasicPagination
 from application.serializers.client_serializer import ClientListSerializer
 from application.entities.client.model import Client
 from application.entities.notification.model import Notification
 from application.entities.message.model import Message
-from application.entities.client.form import ClientForm
-from application.entities.notification.form import NotificationForm
-from application.entities.message.form import MessageForm
 
 
-class ClientListAPIView(APIView):
+class ClientListAPIView(APIView, BasicPagination):
     """
     Get list of all clients or create new client
     """
@@ -25,8 +20,8 @@ class ClientListAPIView(APIView):
         """
         Get list of clients
         """
-        clients = Client.objects.all()
-        clients_serializer = ClientListSerializer(instance=clients, many=True)
+        clients = self.paginate_queryset(Client.objects.all(), request, view=self)
+        clients_serializer = ClientListSerializer(clients, many=True)
         return Response(clients_serializer.data)
 
     def post(self, request: Request, format=None) -> Response:
@@ -51,7 +46,6 @@ class ClientAPIView(APIView):
         """
         client = get_object_or_404(Client, pk=pk)
         client_serializer = ClientListSerializer(client)
-        print(connection.queries)
         return Response(client_serializer.data)
 
     def put(self, request: Request, pk: int, format=None) -> Response:

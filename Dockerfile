@@ -8,7 +8,10 @@ WORKDIR /usr/src/app/
 COPY requirements.txt requirements.txt
 
 # install dependencies
-RUN pip install --upgrade pip && pip install -r requirements.txt
+RUN pip install --upgrade pip &&  \
+    pip uninstall pytz && \
+    pip uninstall tzdata && \
+    pip install -r requirements.txt
 
 # copy project
 COPY . .

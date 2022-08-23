@@ -1,3 +1,7 @@
+# for developing
+local:
+	python manage.py runserver
+
 all: makemig migrate up
 
 run: build up

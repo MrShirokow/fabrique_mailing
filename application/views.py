@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from application.pagination import BasicPagination
-from application.serializers.client_serializer import ClientListSerializer
+from application.serializers.client_serializer import ClientSerializer
 from application.entities.client.model import Client
 from application.entities.notification.model import Notification
 from application.entities.message.model import Message
@@ -21,14 +21,14 @@ class ClientListAPIView(APIView, BasicPagination):
         Get list of clients
         """
         clients = self.paginate_queryset(Client.objects.all(), request, view=self)
-        clients_serializer = ClientListSerializer(clients, many=True)
+        clients_serializer = ClientSerializer(clients, many=True)
         return Response(clients_serializer.data)
 
     def post(self, request: Request, format=None) -> Response:
         """
         Create a new client or 400 (bad request)
         """
-        client_serializer = ClientListSerializer(data=request.data)
+        client_serializer = ClientSerializer(data=request.data)
         if not client_serializer.is_valid():
             return Response(client_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -45,7 +45,7 @@ class ClientAPIView(APIView):
         Get client by id or 404
         """
         client = get_object_or_404(Client, pk=pk)
-        client_serializer = ClientListSerializer(client)
+        client_serializer = ClientSerializer(client)
         return Response(client_serializer.data)
 
     def put(self, request: Request, pk: int, format=None) -> Response:
@@ -53,7 +53,7 @@ class ClientAPIView(APIView):
         Update client by id or 404
         """
         client = get_object_or_404(Client, pk=pk)
-        client_serializer = ClientListSerializer(client, data=request.data)
+        client_serializer = ClientSerializer(client, data=request.data)
         if not client_serializer.is_valid():
             return Response(client_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

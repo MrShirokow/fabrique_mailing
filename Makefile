@@ -1,11 +1,24 @@
-run:
-	python manage.py runserver
+all: makemig migrate up
+
+run: build up
 
 makemig:
 	python manage.py makemigrations
 
 migrate:
-	python manage.py migrate
+	docker exec notification_app python manage.py migrate
 
-su:
-	python manage.py createsuperuser
+up:
+	docker-compose up
+
+down:
+	docker-compose down
+
+build:
+	docker-compose build
+
+imageprune:
+	docker image prune -f
+
+superuser:
+	docker exec -it notification_app python manage.py createsuperuser

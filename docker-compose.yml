@@ -1,0 +1,25 @@
+version: "3.7"
+
+services:
+  db:
+    image: postgres:12.11-alpine
+    container_name: notification_db
+    volumes:
+      - db_volume:/var/lib/postgresql/data
+    env_file: ./.env
+  app:
+    container_name: notification_app
+    volumes:
+      - static_volume:/usr/src/app/static
+      - media_volume:/usr/src/app/media
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    env_file: ./.env
+    ports:
+      - ${PORT}:8000
+    depends_on:
+      - db
+volumes:
+  db_volume:
+  static_volume:
+  media_volume:

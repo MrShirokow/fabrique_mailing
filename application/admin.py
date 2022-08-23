@@ -1,8 +1,8 @@
 from django.contrib import admin
 
-from application.app_models.client import Client
-from application.app_models.message import Message
-from application.app_models.notification import Notification
+from application.entities.client.model import Client
+from application.entities.message.model import Message
+from application.entities.notification.model import Notification
 
 
 @admin.register(Notification)
@@ -19,5 +19,5 @@ class ClientAdmin(admin.ModelAdmin):
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
-    list_display = ('id', 'notification_id', 'client_id', 'start_datetime', 'end_datetime')
+    list_display = ('id', 'notification_id', 'client_id', 'sending_datetime', 'is_send')
     list_display_links = ('id', )

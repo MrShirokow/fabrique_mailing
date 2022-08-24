@@ -1,12 +1,12 @@
 from django.db import models
 
-from application.entities.client.model import Client
-from application.entities.notification.model import Notification
+from application.entities.client import Client
+from application.entities.notification import Notification
 
 
 class Message(models.Model):
-    notification_id = models.OneToOneField(Notification, on_delete=models.CASCADE, related_name='message')
-    client_id = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True)
+    notification_id = models.ForeignKey(Notification, on_delete=models.SET_NULL, null=True, related_name='messages')
+    client_id = models.OneToOneField(Client, on_delete=models.CASCADE, related_name='message')
     sending_datetime = models.DateTimeField()
     is_send = models.BooleanField(default=False)
 

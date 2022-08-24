@@ -1,4 +1,3 @@
-from django.db import connection
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.request import Request
@@ -6,10 +5,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from application.pagination import BasicPagination
-from application.serializers.client_serializer import ClientSerializer
-from application.entities.client.model import Client
-from application.entities.notification.model import Notification
-from application.entities.message.model import Message
+from application.serializers.client import ClientSerializer
+from application.serializers.message import MessageSerializer
+from application.serializers.notification import NotificationSerializer
+from application.entities.client import Client
+from application.entities.message import Message
+from application.entities.notification import Notification
 
 
 class ClientListAPIView(APIView, BasicPagination):
@@ -21,8 +22,8 @@ class ClientListAPIView(APIView, BasicPagination):
         Get list of clients
         """
         clients = self.paginate_queryset(Client.objects.all(), request, view=self)
-        clients_serializer = ClientSerializer(clients, many=True)
-        return Response(clients_serializer.data)
+        client_serializer = ClientSerializer(clients, many=True)
+        return Response(client_serializer.data)
 
     def post(self, request: Request, format=None) -> Response:
         """
@@ -38,11 +39,11 @@ class ClientListAPIView(APIView, BasicPagination):
 
 class ClientAPIView(APIView):
     """
-    Get, update or delete a client instance.
+    Get, update or delete a client instance
     """
     def get(self, request: Request, pk: int, format=None) -> Response:
         """
-        Get client by id or 404
+        Get client by id
         """
         client = get_object_or_404(Client, pk=pk)
         client_serializer = ClientSerializer(client)
@@ -50,7 +51,7 @@ class ClientAPIView(APIView):
 
     def put(self, request: Request, pk: int, format=None) -> Response:
         """
-        Update client by id or 404
+        Update client by id
         """
         client = get_object_or_404(Client, pk=pk)
         client_serializer = ClientSerializer(client, data=request.data)
@@ -62,15 +63,59 @@ class ClientAPIView(APIView):
 
     def delete(self, request: Request, pk: int, format=None) -> Response:
         """
-        Delete client by id or 404
+        Delete client by id
         """
         client = get_object_or_404(Client, pk=pk)
         client.delete()
         return Response('client was deleted successfully', status=status.HTTP_204_NO_CONTENT)
 
 
-class NotificationAPIView(APIView):
-    pass
+class NotificationListAPIView(APIView, BasicPagination):
+    """
+    Get list of all notifications or create new notification
+    """
+    def get(self, request: Request, format=None) -> Response:
+        """
+        Get list of notifications
+        """
+        notifications = Notification.objects.all().prefetch_related('messages')
+        query_params = request.GET
+        tag = query_params.get('tag')
+        mobile_operator_code = query_params.get('mobile_operator_code')
+        if tag:
+            notifications = notifications.filter(tag=tag)
+        if mobile_operator_code:
+            notifications = notifications.filter(mobile_operator_code=mobile_operator_code)
+        notifications = self.paginate_queryset(notifications, request, view=self)
+        notification_serializer = NotificationSerializer(notifications, many=True)
+        return Response(notification_serializer.data)
+
+    def post(self, request: Request, format=None) -> Response:
+        """
+        Create a new notification
+        """
+        notification_serializer = NotificationSerializer(request.data)
+        return Response(status=status.HTTP_201_CREATED)
+
+
+class NotificationAPIView(APIView, BasicPagination):
+    def get(self, request: Request, pk: int, format=None) -> Response:
+        """
+        Get notification by id
+        """
+        return Response(status=status.HTTP_200_OK)
+
+    def put(self, request: Request, pk: int, format=None) -> Response:
+        """
+        Update notification by id
+        """
+        return Response(status=status.HTTP_200_OK)
+
+    def delete(self, request: Request, pk: int, format=None) -> Response:
+        """
+        Delete notification by id
+        """
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class MessageAPIView(APIView):

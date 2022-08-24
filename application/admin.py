@@ -1,14 +1,14 @@
 from django.contrib import admin
 
-from application.entities.client.model import Client
-from application.entities.message.model import Message
-from application.entities.notification.model import Notification
+from application.entities.client import Client
+from application.entities.message import Message
+from application.entities.notification import Notification
 
 
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'start_datetime', 'end_datetime')
-    list_display_links = ('id', 'start_datetime', 'end_datetime')
+    list_display = ('id', 'start_datetime', 'end_datetime', 'text')
+    list_display_links = ('id', 'text')
 
 
 @admin.register(Client)

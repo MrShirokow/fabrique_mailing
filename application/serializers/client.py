@@ -2,7 +2,7 @@ import pytz
 
 from rest_framework import serializers
 
-from application.entities.client.model import Client
+from application.entities.client import Client
 
 
 class ClientSerializer(serializers.ModelSerializer):

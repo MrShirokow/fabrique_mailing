@@ -1,3 +1,5 @@
+from django.db import connection
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.request import Request
@@ -78,7 +80,7 @@ class NotificationListAPIView(APIView, BasicPagination):
         """
         Get list of notifications
         """
-        notifications = Notification.objects.all().prefetch_related('messages')
+        notifications = Notification.objects.all()
         query_params = request.GET
         tag = query_params.get('tag')
         mobile_operator_code = query_params.get('mobile_operator_code')
@@ -94,8 +96,12 @@ class NotificationListAPIView(APIView, BasicPagination):
         """
         Create a new notification
         """
-        notification_serializer = NotificationSerializer(request.data)
-        return Response(status=status.HTTP_201_CREATED)
+        notification_serializer = NotificationSerializer(data=request.data)
+        if not notification_serializer.is_valid():
+            return Response(notification_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        notification_serializer.save()
+        return Response('notification was created successfully', status=status.HTTP_201_CREATED)
 
 
 class NotificationAPIView(APIView, BasicPagination):
@@ -103,19 +109,29 @@ class NotificationAPIView(APIView, BasicPagination):
         """
         Get notification by id
         """
-        return Response(status=status.HTTP_200_OK)
+        notification = get_object_or_404(Notification, pk=pk)
+        notification_serializer = NotificationSerializer(notification)
+        return Response(notification_serializer.data)
 
     def put(self, request: Request, pk: int, format=None) -> Response:
         """
         Update notification by id
         """
-        return Response(status=status.HTTP_200_OK)
+        notification = get_object_or_404(Notification, pk=pk)
+        notification_serializer = NotificationSerializer(notification, data=request.data)
+        if not notification_serializer.is_valid():
+            return Response(notification_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        notification_serializer.save()
+        return Response('notification was updated successfully', status=status.HTTP_200_OK)
 
     def delete(self, request: Request, pk: int, format=None) -> Response:
         """
         Delete notification by id
         """
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        notification = get_object_or_404(Notification, pk=pk)
+        notification.delete()
+        return Response('notification was deleted successfully', status=status.HTTP_204_NO_CONTENT)
 
 
 class MessageAPIView(APIView):

@@ -1,5 +1,5 @@
 from django.db import connection
-from django.db.models import Q
+from django.db.models import Q, Count, QuerySet
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.request import Request
@@ -19,6 +19,7 @@ class ClientListAPIView(APIView, BasicPagination):
     """
     Get list of all clients or create new client
     """
+
     def get(self, request: Request, format=None) -> Response:
         """
         Get list of clients
@@ -43,6 +44,7 @@ class ClientAPIView(APIView):
     """
     Get, update or delete a client instance
     """
+
     def get(self, request: Request, pk: int, format=None) -> Response:
         """
         Get client by id
@@ -76,18 +78,12 @@ class NotificationListAPIView(APIView, BasicPagination):
     """
     Get list of all notifications or create new notification
     """
+
     def get(self, request: Request, format=None) -> Response:
         """
         Get list of notifications
         """
         notifications = Notification.objects.all()
-        query_params = request.GET
-        tag = query_params.get('tag')
-        mobile_operator_code = query_params.get('mobile_operator_code')
-        if tag:
-            notifications = notifications.filter(tag=tag)
-        if mobile_operator_code:
-            notifications = notifications.filter(mobile_operator_code=mobile_operator_code)
         notifications = self.paginate_queryset(notifications, request, view=self)
         notification_serializer = NotificationSerializer(notifications, many=True)
         return Response(notification_serializer.data)
@@ -134,15 +130,26 @@ class NotificationAPIView(APIView, BasicPagination):
         return Response('notification was deleted successfully', status=status.HTTP_204_NO_CONTENT)
 
 
-class MessageListByNotificationAPIView(APIView):
+class MessageListByNotificationAPIView(APIView, BasicPagination):
     """
     Get statistics of sent messages by notification (notifications/{pk}/messages)
     """
+
     def get(self, request: Request, pk: int, format=None) -> Response:
         """
         Get list of messages by notification
         """
         get_object_or_404(Notification, pk=pk)
         sent_messages = Message.objects.filter(Q(notification=pk) & Q(is_sending=True))
+        sent_messages = self.paginate_queryset(sent_messages, request, view=self)
         message_serializer = MessageSerializer(sent_messages, many=True)
-        return Response({'sent messages': message_serializer.data}, status=status.HTTP_200_OK)
+        return Response({'sent_messages': message_serializer.data})
+
+
+class MessagesCountGroupByStatusAPIView(APIView):
+    """
+    Get count of messages from existing notifications grouped by status
+    """
+    def get(self, request: Request) -> Response:
+        message_statistics = Message.objects.values('notification', 'is_sending').annotate(count=Count('is_sending'))
+        return Response(message_statistics)

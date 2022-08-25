@@ -28,7 +28,8 @@ env = environ.Env(
     POSTGRES_PORT=(str, ''),
     SECRET_KEY=(str, ''),
     DEBUG=(bool, False),
-    API_SECRET=(str, '')
+    API_SECRET=(str, ''),
+    OPEN_API_TOKEN=(str, '')
 )
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
@@ -38,6 +39,7 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('SECRET_KEY')
 API_SECRET = env('API_SECRET')
+OPEN_API_TOKEN = env('OPEN_API_TOKEN')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG', default=False)

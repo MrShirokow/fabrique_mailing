@@ -20,3 +20,4 @@ class Client(models.Model):
         verbose_name = 'client'
         verbose_name_plural = 'clients'
         ordering = ['id']
+        app_label = 'application'

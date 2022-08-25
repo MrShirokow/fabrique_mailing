@@ -7,7 +7,7 @@ from application.entities.notification import Notification
 class Message(models.Model):
     notification = models.ForeignKey(Notification, on_delete=models.CASCADE, related_name='messages')
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='messages')
-    sending_datetime = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     is_sending = models.BooleanField(default=False)
 
     def __str__(self):
@@ -17,3 +17,4 @@ class Message(models.Model):
         verbose_name = 'message'
         verbose_name_plural = 'messages'
         ordering = ['id']
+        app_label = 'application'

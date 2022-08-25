@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 import os
+
+import django
 import environ
 from pathlib import Path
 
@@ -136,7 +138,7 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_DEPRECATED_PYTZ = True
 
 
 # Static files (CSS, JavaScript, Images)

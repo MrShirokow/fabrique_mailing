@@ -1,6 +1,5 @@
 from collections import defaultdict
-from django.db import connection
-from django.db.models import Q, Count, QuerySet
+from django.db.models import Q, Count
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.request import Request
@@ -151,7 +150,6 @@ class MessagesCountGroupByStatusAPIView(APIView):
     """
     Get count of messages from existing notifications grouped by status
     """
-
     def get(self, request: Request) -> Response:
         message_stats_by_notification = defaultdict(lambda: defaultdict(int))
         for notification_id, is_sending, count in (

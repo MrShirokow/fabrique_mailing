@@ -9,4 +9,4 @@ class MessageSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Message
-        fields = ('id', 'notification', 'client', 'sending_datetime', 'is_sending')
+        fields = ('id', 'notification', 'client', 'is_sending')

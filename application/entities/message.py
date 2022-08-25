@@ -5,8 +5,8 @@ from application.entities.notification import Notification
 
 
 class Message(models.Model):
-    notification_id = models.ForeignKey(Notification, on_delete=models.CASCADE, related_name='messages')
-    client_id = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='messages')
+    notification = models.ForeignKey(Notification, on_delete=models.CASCADE, related_name='messages')
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='messages')
     sending_datetime = models.DateTimeField()
     is_sending = models.BooleanField(default=False)
 

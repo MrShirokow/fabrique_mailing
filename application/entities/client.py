@@ -14,7 +14,7 @@ class Client(models.Model):
         return self.phone_number[1:4]
 
     def __str__(self):
-        return f'client {self.phone_number}'
+        return f'{self.phone_number}'
 
     class Meta:
         verbose_name = 'client'

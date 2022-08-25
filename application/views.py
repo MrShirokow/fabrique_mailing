@@ -134,5 +134,15 @@ class NotificationAPIView(APIView, BasicPagination):
         return Response('notification was deleted successfully', status=status.HTTP_204_NO_CONTENT)
 
 
-class MessageAPIView(APIView):
-    pass
+class MessageListByNotificationAPIView(APIView):
+    """
+    Get statistics of sent messages by notification (notifications/{pk}/messages)
+    """
+    def get(self, request: Request, pk: int, format=None) -> Response:
+        """
+        Get list of messages by notification
+        """
+        get_object_or_404(Notification, pk=pk)
+        sent_messages = Message.objects.filter(Q(notification=pk) & Q(is_sending=True))
+        message_serializer = MessageSerializer(sent_messages, many=True)
+        return Response({'sent messages': message_serializer.data}, status=status.HTTP_200_OK)

@@ -19,5 +19,5 @@ class ClientAdmin(admin.ModelAdmin):
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
-    list_display = ('id', 'notification_id', 'client_id', 'sending_datetime', 'is_sending')
+    list_display = ('id', 'notification', 'client', 'sending_datetime', 'is_sending')
     list_display_links = ('id', )

@@ -56,7 +56,7 @@ class ClientAPIView(APIView):
         Update client by id
         """
         client = get_object_or_404(Client, pk=pk)
-        client_serializer = ClientSerializer(client, data=request.data)
+        client_serializer = ClientSerializer(client, data=request.data, partial=True)
         if not client_serializer.is_valid():
             return Response(client_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -118,7 +118,7 @@ class NotificationAPIView(APIView, BasicPagination):
         Update notification by id
         """
         notification = get_object_or_404(Notification, pk=pk)
-        notification_serializer = NotificationSerializer(notification, data=request.data)
+        notification_serializer = NotificationSerializer(notification, data=request.data, partial=True)
         if not notification_serializer.is_valid():
             return Response(notification_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

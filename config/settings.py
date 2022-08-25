@@ -11,8 +11,6 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 import os
-
-import django
 import environ
 from pathlib import Path
 
@@ -103,8 +101,8 @@ DATABASES = {
         'NAME': env('POSTGRES_DB'),
         'USER': env('POSTGRES_USER'),
         'PASSWORD': env('POSTGRES_PASSWORD'),
-        'HOST': 'localhost',
-        # 'HOST': env('POSTGRES_HOST'),
+        # 'HOST': 'localhost',
+        'HOST': env('POSTGRES_HOST'),
         'PORT': env('POSTGRES_PORT')
     }
 }

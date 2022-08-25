@@ -1,3 +1,4 @@
+from collections import defaultdict
 from django.db import connection
 from django.db.models import Q, Count, QuerySet
 from django.shortcuts import get_object_or_404
@@ -150,6 +151,24 @@ class MessagesCountGroupByStatusAPIView(APIView):
     """
     Get count of messages from existing notifications grouped by status
     """
+
     def get(self, request: Request) -> Response:
-        message_statistics = Message.objects.values('notification', 'is_sending').annotate(count=Count('is_sending'))
-        return Response(message_statistics)
+        message_stats_by_notification = defaultdict(lambda: defaultdict(int))
+        for notification_id, is_sending, count in (
+                Message.objects.values('notification_id', 'is_sending')
+                               .annotate(count=Count('is_sending'))
+                               .values_list('notification_id', 'is_sending', 'count')
+        ):
+            message_stats_by_notification[notification_id][is_sending] += count
+
+        result = [
+            {
+                'notification': notification_id,
+                'messages': [
+                    {'is_sending': state,
+                     'count': message_state[state]} for state in (True, False)
+                ]
+            }
+            for notification_id, message_state in message_stats_by_notification.items()
+        ]
+        return Response(result)

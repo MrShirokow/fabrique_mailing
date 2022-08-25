@@ -9,4 +9,4 @@ class NotificationSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Notification
-        fields = ('id', 'start_datetime', 'end_datetime', 'text')
+        fields = ('id', 'start_datetime', 'end_datetime', 'text', 'sending_filter')

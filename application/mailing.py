@@ -47,7 +47,10 @@ def get_notifications() -> QuerySet:
     return notifications
 
 
-def create_message(data):
+def create_message(data: dict):
+    """
+    Create message from input data
+    """
     message_serializer = MessageSerializer(data=data)
     if message_serializer.is_valid():
         message_serializer.save()

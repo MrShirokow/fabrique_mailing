@@ -1,23 +1,13 @@
-import os
-import django
-from django.conf import settings
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
-if not settings.configured:
-    django.setup()
-
 import json
 import requests
 
 from django.db.models import Q, QuerySet
-from django.db import connection
 from datetime import datetime
 from requests import Response
 from rest_framework import status
 
 from config.settings import OPEN_API_TOKEN
 from application.entities.client import Client
-from application.entities.message import Message
 from application.entities.notification import Notification
 from application.serializers.message import MessageSerializer
 
@@ -78,7 +68,3 @@ def main():
                 'is_sending': mailing_status
             }
             create_message(data)
-
-
-if __name__ == '__main__':
-    main()

@@ -28,10 +28,10 @@ superuser:
 	docker exec -it notification_app python manage.py createsuperuser
 
 cronadd:
-	(crontab -l ; echo "*/2 * * * * docker exec notification_app bash ./mailing_cron.sh") | crontab -
+	docker exec -it notification_app python manage.py crontab add
 
 cronshow:
-	crontab -l
+	docker exec -it notification_app python manage.py crontab show
 
 cronremove:
-	crontab -r;
+	docker exec -it notification_app python manage.py crontab remove

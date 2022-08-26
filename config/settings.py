@@ -57,8 +57,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'django_crontab',
     'rest_framework',
     'application'
+]
+
+CRONJOBS = [
+    ('*/1 * * * *', 'application.mailing.main')
 ]
 
 MIDDLEWARE = [
@@ -101,8 +106,8 @@ DATABASES = {
         'NAME': env('POSTGRES_DB'),
         'USER': env('POSTGRES_USER'),
         'PASSWORD': env('POSTGRES_PASSWORD'),
-        # 'HOST': 'localhost',
-        'HOST': env('POSTGRES_HOST'),
+        'HOST': 'localhost',
+        # 'HOST': env('POSTGRES_HOST'),
         'PORT': env('POSTGRES_PORT')
     }
 }

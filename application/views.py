@@ -78,7 +78,6 @@ class NotificationListAPIView(APIView, BasicPagination):
     """
     Get list of all notifications or create new notification
     """
-
     def get(self, request: Request, format=None) -> Response:
         """
         Get list of notifications

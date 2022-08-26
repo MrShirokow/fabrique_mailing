@@ -91,6 +91,12 @@ class NotificationListAPIView(APIView, BasicPagination):
         """
         Create a new notification
         """
+        tag = request.data['mailing_filter'].get('tag')
+        mobile_operator_code = request.data['mailing_filter'].get('mobile_operator_code')
+        if tag is None and mobile_operator_code is None:
+            return Response('filter must contain at least one parameter from the list: [tag, mobile_operator_code]',
+                            status=status.HTTP_400_BAD_REQUEST)
+
         notification_serializer = NotificationSerializer(data=request.data)
         if not notification_serializer.is_valid():
             return Response(notification_serializer.errors, status=status.HTTP_400_BAD_REQUEST)

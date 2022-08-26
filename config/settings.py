@@ -63,7 +63,7 @@ INSTALLED_APPS = [
 ]
 
 CRONJOBS = [
-    ('*/1 * * * *', 'application.mailing.main')
+    ('*/1 * * * *', 'application.mailing.start_mailing')
 ]
 
 MIDDLEWARE = [
@@ -106,8 +106,8 @@ DATABASES = {
         'NAME': env('POSTGRES_DB'),
         'USER': env('POSTGRES_USER'),
         'PASSWORD': env('POSTGRES_PASSWORD'),
-        'HOST': 'localhost',
-        # 'HOST': env('POSTGRES_HOST'),
+        # 'HOST': 'localhost',
+        'HOST': env('POSTGRES_HOST'),
         'PORT': env('POSTGRES_PORT')
     }
 }

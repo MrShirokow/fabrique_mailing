@@ -1,5 +1,8 @@
 # pull official base image
-FROM python:3.10-slim-bullseye
+FROM python:3.10
+
+# install cron
+RUN apt-get update && apt-get install -y cron
 
 # set work directory
 WORKDIR /usr/src/app/

@@ -36,6 +36,11 @@ class ClientListAPIView(APIView, BasicPagination):
         if not client_serializer.is_valid():
             return Response(client_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+        phone_number = request.data['phone_number']
+        mobile_operator_code = request.data['mobile_operator_code']
+        if phone_number[1:4] != str(mobile_operator_code):
+            return Response('Invalid mobile operator code', status=status.HTTP_400_BAD_REQUEST)
+
         client_serializer.save()
         return Response('client was created successfully', status=status.HTTP_201_CREATED)
 
@@ -91,15 +96,15 @@ class NotificationListAPIView(APIView, BasicPagination):
         """
         Create a new notification
         """
+        notification_serializer = NotificationSerializer(data=request.data)
+        if not notification_serializer.is_valid():
+            return Response(notification_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
         tag = request.data['mailing_filter'].get('tag')
         mobile_operator_code = request.data['mailing_filter'].get('mobile_operator_code')
         if tag is None and mobile_operator_code is None:
             return Response('filter must contain at least one parameter from the list: [tag, mobile_operator_code]',
                             status=status.HTTP_400_BAD_REQUEST)
-
-        notification_serializer = NotificationSerializer(data=request.data)
-        if not notification_serializer.is_valid():
-            return Response(notification_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         notification_serializer.save()
         return Response('notification was created successfully', status=status.HTTP_201_CREATED)

@@ -32,7 +32,7 @@ def get_clients(mailing_filter: dict) -> QuerySet:
     if tag:
         clients = clients.filter(tag=tag)
     if mobile_operator_code:
-        clients = clients.filter(mobile_operator_code=mobile_operator_code)
+        clients = clients.filter(mobile_operator_code=str(mobile_operator_code))
 
     return clients.values_list('id', 'phone_number')
 
@@ -53,7 +53,7 @@ def create_message(data):
         message_serializer.save()
 
 
-def main():
+def start_mailing():
     notifications = get_notifications()
     for notification_id, text, mailing_filter in notifications:
         clients = get_clients(mailing_filter)

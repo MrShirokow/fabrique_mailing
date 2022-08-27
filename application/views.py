@@ -6,6 +6,8 @@ from rest_framework.request import Request
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
+import application.serializers.message_stats as message_stats
+
 from application.pagination import BasicPagination
 from application.serializers.client import ClientSerializer
 from application.serializers.message import MessageSerializer
@@ -161,22 +163,8 @@ class MessagesCountGroupByStatusAPIView(APIView):
     Get count of messages from existing notifications grouped by status
     """
     def get(self, request: Request) -> Response:
-        message_stats_by_notification = defaultdict(lambda: defaultdict(int))
-        for notification_id, is_sending, count in (
-                Message.objects.values('notification_id', 'is_sending')
-                               .annotate(count=Count('is_sending'))
-                               .values_list('notification_id', 'is_sending', 'count')
-        ):
-            message_stats_by_notification[notification_id][is_sending] += count
+        queryset = Message.objects.values('notification_id', 'is_sending')\
+                                  .annotate(count=Count('is_sending'))\
+                                  .values_list('notification_id', 'is_sending', 'count')
 
-        result = [
-            {
-                'notification': notification_id,
-                'messages': [
-                    {'is_sending': state,
-                     'count': message_state[state]} for state in (True, False)
-                ]
-            }
-            for notification_id, message_state in message_stats_by_notification.items()
-        ]
-        return Response(result)
+        return Response(message_stats.serialize_stats(message_stats.get_stats_dict(queryset)))

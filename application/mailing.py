@@ -1,6 +1,7 @@
 import json
 import requests
 
+from itertools import islice
 from django.db.models import Q, QuerySet
 from datetime import datetime
 from requests import Response
@@ -50,7 +51,13 @@ def create_messages(messages: list):
     """
     Create message records from input data
     """
-    Message.objects.bulk_create(messages, 100)
+    batch_size = 100
+    message_iterator = iter(messages)
+    while True:
+        batch = list(islice(message_iterator, batch_size))
+        if not batch:
+            break
+        Message.objects.bulk_create(batch, batch_size)
 
 
 def start_mailing():

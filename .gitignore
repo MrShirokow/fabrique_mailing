@@ -80,6 +80,7 @@ target/
 # IPython
 profile_default/
 ipython_config.py
+application/_mailing.py
 
 # pyenv
 .python-version

@@ -7,7 +7,7 @@ class Notification(models.Model):
     end_datetime = models.DateTimeField()
     text = models.TextField(blank=True)
     mailing_filter = models.JSONField()
-    reached_numbers = ArrayField(models.CharField(max_length=11), default=list)
+    reached_numbers = ArrayField(models.CharField(max_length=11), default=list, blank=True)
 
     def __str__(self):
         return f'notification #{self.id}'

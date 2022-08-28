@@ -1,4 +1,4 @@
-from collections import defaultdict
+from django.db import connection
 from django.db.models import Q, Count
 from django.shortcuts import get_object_or_404
 from rest_framework import status
@@ -130,7 +130,7 @@ class NotificationAPIView(APIView, BasicPagination):
         if not notification_serializer.is_valid():
             return Response(notification_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        notification_serializer.save()
+        notification_serializer.save(reached_numbers=[])
         return Response('notification was updated successfully', status=status.HTTP_200_OK)
 
     def delete(self, request: Request, pk: int, format=None) -> Response:

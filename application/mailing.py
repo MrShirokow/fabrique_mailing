@@ -52,7 +52,7 @@ def create_messages(messages: list):
     Create message records from input data
     """
     batch_size = 100
-    message_iterator = iter(messages)
+    message_iterator = (message for message in messages)
     while True:
         batch = list(islice(message_iterator, batch_size))
         if not batch:

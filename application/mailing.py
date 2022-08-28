@@ -8,8 +8,8 @@ from rest_framework import status
 
 from config.settings import OPEN_API_TOKEN
 from application.entities.client import Client
+from application.entities.message import Message
 from application.entities.notification import Notification
-from application.serializers.message import MessageSerializer
 
 
 def send_message(data: dict) -> Response:
@@ -42,32 +42,36 @@ def get_notifications() -> QuerySet:
     Get notifications for start mailing
     """
     now = datetime.now()
-    notifications = Notification.objects.filter(Q(start_datetime__lte=now) & Q(end_datetime__gte=now))\
-                                        .values_list('id', 'text', 'mailing_filter')
+    notifications = Notification.objects.filter(Q(start_datetime__lte=now) & Q(end_datetime__gte=now)).all()
     return notifications
 
 
-def create_message(data: dict):
+def create_messages(messages: list):
     """
     Create message from input data
     """
-    message_serializer = MessageSerializer(data=data)
-    if message_serializer.is_valid():
-        message_serializer.save()
+    Message.objects.bulk_create(messages, 100)
 
 
 def start_mailing():
-    notifications = get_notifications()
-    for notification_id, text, mailing_filter in notifications:
-        clients = get_clients(mailing_filter)
+    """
+    Start notification mailing and creating messages in database
+    """
+    messages = []
+    for notification in get_notifications():
+        clients = get_clients(notification.mailing_filter)
         for client_id, phone_number in clients:
-            response = send_message(data={"id": 1, "phone": phone_number, "text": text})
+            if phone_number in notification.reached_numbers:
+                continue
+            response = send_message(data={"id": 1, "phone": phone_number, "text": notification.text})
             mailing_status = False
             if response.status_code == status.HTTP_200_OK:
                 mailing_status = True
-            data = {
-                'notification': notification_id,
-                'client': client_id,
+                notification.reached_numbers.append(phone_number)
+                notification.save()
+            messages.append(Message(**{
+                'notification_id': notification.id,
+                'client_id': client_id,
                 'is_sending': mailing_status
-            }
-            create_message(data)
+            }))
+    create_messages(messages)

@@ -7,7 +7,7 @@ from application.entities.notification import Notification
 
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'start_datetime', 'end_datetime', 'text', 'mailing_filter')
+    list_display = ('id', 'start_datetime', 'end_datetime', 'text', 'mailing_filter', 'reached_numbers')
     list_display_links = ('id', 'text')
 
 

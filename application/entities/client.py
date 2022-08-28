@@ -9,7 +9,7 @@ class Client(models.Model):
                                                 message='Mobile operator code must have a length of 3')
     phone_number = models.CharField(validators=[phone_regex], max_length=11, unique=True, blank=False, null=False)
     tag = models.CharField(max_length=10)
-    mobile_operator_code = models.CharField(validators=[mobile_operator_code_regex], max_length=3, null=True)
+    mobile_operator_code = models.CharField(validators=[mobile_operator_code_regex], max_length=3)
     time_zone = TimeZoneField(choices_display='WITH_GMT_OFFSET')
 
     def __str__(self):

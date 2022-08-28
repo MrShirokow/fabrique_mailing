@@ -1,4 +1,3 @@
-from django.db import connection
 from django.db.models import Q, Count
 from django.shortcuts import get_object_or_404
 from rest_framework import status
@@ -146,7 +145,6 @@ class MessageListByNotificationAPIView(APIView, BasicPagination):
     """
     Get statistics of sent messages by notification (notifications/{pk}/messages)
     """
-
     def get(self, request: Request, pk: int, format=None) -> Response:
         """
         Get list of messages by notification
@@ -162,9 +160,8 @@ class MessagesCountGroupByStatusAPIView(APIView):
     """
     Get count of messages from existing notifications grouped by status
     """
-    def get(self, request: Request) -> Response:
-        queryset = Message.objects.select_related('notification')\
-                                  .values('notification_id', 'is_sending', 'notification__text')\
+    def get(self, request: Request, format=None) -> Response:
+        queryset = Message.objects.values('notification_id', 'is_sending', 'notification__text')\
                                   .annotate(count=Count('is_sending'))\
                                   .values_list('notification_id', 'is_sending', 'count', 'notification__text')
 

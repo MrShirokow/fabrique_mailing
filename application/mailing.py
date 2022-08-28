@@ -48,7 +48,7 @@ def get_notifications() -> QuerySet:
 
 def create_messages(messages: list):
     """
-    Create message from input data
+    Create message records from input data
     """
     Message.objects.bulk_create(messages, 100)
 
@@ -59,19 +59,21 @@ def start_mailing():
     """
     messages = []
     for notification in get_notifications():
-        clients = get_clients(notification.mailing_filter)
-        for client_id, phone_number in clients:
+        reached_numbers = []
+        for client_id, phone_number in get_clients(notification.mailing_filter):
             if phone_number in notification.reached_numbers:
                 continue
             response = send_message(data={"id": 1, "phone": phone_number, "text": notification.text})
             mailing_status = False
             if response.status_code == status.HTTP_200_OK:
                 mailing_status = True
-                notification.reached_numbers.append(phone_number)
-                notification.save()
+                reached_numbers.append(phone_number)
             messages.append(Message(**{
                 'notification_id': notification.id,
                 'client_id': client_id,
                 'is_sending': mailing_status
             }))
+        if reached_numbers:
+            notification.reached_numbers.extend(reached_numbers)
+            notification.save()
     create_messages(messages)

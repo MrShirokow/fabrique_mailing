@@ -163,8 +163,9 @@ class MessagesCountGroupByStatusAPIView(APIView):
     Get count of messages from existing notifications grouped by status
     """
     def get(self, request: Request) -> Response:
-        queryset = Message.objects.values('notification_id', 'is_sending')\
+        queryset = Message.objects.select_related('notification')\
+                                  .values('notification_id', 'is_sending', 'notification__text')\
                                   .annotate(count=Count('is_sending'))\
-                                  .values_list('notification_id', 'is_sending', 'count')
+                                  .values_list('notification_id', 'is_sending', 'count', 'notification__text')
 
         return Response(message_stats.serialize_stats(message_stats.get_stats_dict(queryset)))

@@ -1,5 +1,7 @@
 import json
 import requests
+import logging
+import pathlib
 
 from itertools import islice
 from django.db.models import Q, QuerySet
@@ -7,10 +9,16 @@ from datetime import datetime
 from requests import Response
 from rest_framework import status
 
+import application.log_messages_creator as log
+
 from config.settings import OPEN_API_TOKEN, MAILING_SERVICE_URL, ACCEPT, CONTENT_TYPE
 from application.entities.client import Client
 from application.entities.message import Message
 from application.entities.notification import Notification
+
+
+logging.basicConfig(filename=pathlib.Path(__file__).resolve().parent.joinpath('logger.log'),
+                    format='%(levelname)s %(asctime)s %(message)s', level=logging.INFO)
 
 
 def get_clients(mailing_filter: dict) -> QuerySet:
@@ -56,6 +64,7 @@ def send_message(data: dict) -> Response:
     """
     headers = {'Content-type': CONTENT_TYPE, 'accept': ACCEPT, 'Authorization': OPEN_API_TOKEN}
     response = requests.post(MAILING_SERVICE_URL, data=json.dumps(data), headers=headers)
+    logging.info(log.create_mailing_log_message(response.request, response))
     return response
 
 

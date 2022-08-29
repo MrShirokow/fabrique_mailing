@@ -35,7 +35,6 @@ env = environ.Env(
 )
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
@@ -76,7 +75,7 @@ CRONJOBS = [
 
 MIDDLEWARE = [
     # 'application.middlewares.api_secret_middleware.ApiSecretMiddleware',
-    # 'application.middlewares.api_logger_middleware.APILogMiddleware',
+    'application.middlewares.api_logger_middleware.APILogMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -106,7 +105,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
@@ -120,7 +118,6 @@ DATABASES = {
         'PORT': env('POSTGRES_PORT')
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -140,7 +137,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -151,7 +147,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_DEPRECATED_PYTZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/

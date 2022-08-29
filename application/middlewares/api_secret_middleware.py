@@ -1,7 +1,7 @@
 import hashlib
 import hmac
 
-from django.http import HttpResponseForbidden, HttpRequest
+from django.http import HttpResponseForbidden, HttpRequest, HttpResponse
 
 from config.settings import API_SECRET
 
@@ -13,7 +13,7 @@ class ApiSecretMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
-    def __call__(self, request: HttpRequest):
+    def __call__(self, request: HttpRequest) -> HttpResponse:
         if request.path.startswith('/api/'):
             if request.headers.get('X-Signature') != get_signature(request, API_SECRET):
                 return HttpResponseForbidden('Unknown API key')

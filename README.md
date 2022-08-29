@@ -1,10 +1,10 @@
 # Mailing
 **Mailing** is WEB a application for creating and sending notifications
 
-## Installing `Docker`
+## `Docker` installation
 https://docs.docker.com/install/linux/docker-ce/ubuntu/
 
-## Install `docker-compose`
+## `docker-compose` installation
 https://docs.docker.com/compose/install/
 
 ## Run project

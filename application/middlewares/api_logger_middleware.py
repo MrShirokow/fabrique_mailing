@@ -1,7 +1,10 @@
-import json
-
-import logging
 import time
+import logging
+
+from django.http import HttpRequest
+from rest_framework.response import Response
+
+from application.log import create_log_message
 
 logger = logging.getLogger(__name__)
 
@@ -13,20 +16,10 @@ class APILogMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
-    def __call__(self, request):
+    def __call__(self, request: HttpRequest) -> Response:
         start = time.time()
         response = self.get_response(request)
+        end = time.time()
         if request.path.startswith('/api/'):
-            response_ms = (time.time() - start) * 1000
-            method = request.method
-            status_code = response.status_code
-            request_path = request.path
-            data = json.dumps(response.data)
-            logger.info({
-                'method': method,
-                'path': request_path,
-                'time': f'{response_ms:.3f} ms',
-                'status_code': status_code,
-                'response_data': data
-            })
+            logger.info(create_log_message(request, response, start, end))
         return response

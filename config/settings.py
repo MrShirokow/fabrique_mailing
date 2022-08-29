@@ -17,6 +17,24 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Environment creation
+env = environ.Env(
+    POSTGRES_ENGINE=(str, ''),
+    POSTGRES_DB=(str, ''),
+    POSTGRES_USER=(str, ''),
+    POSTGRES_PASSWORD=(str, ''),
+    POSTGRES_HOST=(str, ''),
+    POSTGRES_PORT=(str, ''),
+    SECRET_KEY=(str, ''),
+    DEBUG=(bool, False),
+    API_SECRET=(str, ''),
+    OPEN_API_TOKEN=(str, ''),
+    MAILING_SERVICE_URL=(str, ''),
+    CONTENT_TYPE=(str, ''),
+    ACCEPT=(str, ''),
+)
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
 # Logging
 LOGGING = {
     'version': 1,
@@ -44,28 +62,18 @@ LOGGING = {
     }
 }
 
-# Environment creation
-env = environ.Env(
-    POSTGRES_ENGINE=(str, ''),
-    POSTGRES_DB=(str, ''),
-    POSTGRES_USER=(str, ''),
-    POSTGRES_PASSWORD=(str, ''),
-    POSTGRES_HOST=(str, ''),
-    POSTGRES_PORT=(str, ''),
-    SECRET_KEY=(str, ''),
-    DEBUG=(bool, False),
-    API_SECRET=(str, ''),
-    OPEN_API_TOKEN=(str, '')
-)
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('SECRET_KEY')
 API_SECRET = env('API_SECRET')
+
+# Mailing service request data
 OPEN_API_TOKEN = env('OPEN_API_TOKEN')
+MAILING_SERVICE_URL = env('MAILING_SERVICE_URL')
+CONTENT_TYPE = env('CONTENT_TYPE')
+ACCEPT = env('ACCEPT')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG', default=False)
@@ -89,7 +97,7 @@ INSTALLED_APPS = [
 ]
 
 CRONJOBS = [
-    ('*/1 * * * *', 'application.mailing.start_mailing')
+    ('* */4 * * *', 'application.mailing.start_mailing')
 ]
 
 MIDDLEWARE = [

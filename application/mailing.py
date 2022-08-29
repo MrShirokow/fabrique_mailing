@@ -1,5 +1,6 @@
 import json
 import requests
+import logging
 
 from itertools import islice
 from django.db.models import Q, QuerySet
@@ -7,10 +8,13 @@ from datetime import datetime
 from requests import Response
 from rest_framework import status
 
-from config.settings import OPEN_API_TOKEN
 from application.entities.client import Client
 from application.entities.message import Message
 from application.entities.notification import Notification
+from config.settings import OPEN_API_TOKEN, MAILING_SERVICE_URL, ACCEPT, CONTENT_TYPE
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_clients(mailing_filter: dict) -> QuerySet:
@@ -54,9 +58,8 @@ def send_message(data: dict) -> Response:
     """
     Send message and return response
     """
-    url = "https://probe.fbrq.cloud/v1/send/1"
-    headers = {'Content-type': 'application/json', 'accept': 'application/json', 'Authorization': OPEN_API_TOKEN}
-    response = requests.post(url, data=json.dumps(data), headers=headers)
+    headers = {'Content-type': CONTENT_TYPE, 'accept': ACCEPT, 'Authorization': OPEN_API_TOKEN}
+    response = requests.post(MAILING_SERVICE_URL, data=json.dumps(data), headers=headers)
     return response
 
 

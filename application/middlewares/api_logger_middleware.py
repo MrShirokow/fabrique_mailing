@@ -1,7 +1,7 @@
 import time
 import logging
 
-import application.log as log
+import application.log_messages_creator as log
 
 from django.http import HttpRequest
 from rest_framework.response import Response

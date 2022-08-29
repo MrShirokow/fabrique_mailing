@@ -35,32 +35,6 @@ env = environ.Env(
 )
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-# Logging
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'log_format': {
-            'format': '{levelname} {asctime} {message}',
-            'style': '{',
-        },
-    },
-    'handlers': {
-        'request_handler': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': 'application/logger.log',
-            'formatter': 'log_format',
-        },
-    },
-    'loggers': {
-        'application': {
-            'handlers': ['request_handler'],
-            'level': 'INFO',
-            'propagate': True
-        }
-    }
-}
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -102,7 +76,7 @@ CRONJOBS = [
 
 MIDDLEWARE = [
     # 'application.middlewares.api_secret_middleware.ApiSecretMiddleware',
-    'application.middlewares.api_logger_middleware.APILogMiddleware',
+    # 'application.middlewares.api_logger_middleware.APILogMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

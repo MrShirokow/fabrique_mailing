@@ -13,16 +13,6 @@ from application.entities.message import Message
 from application.entities.notification import Notification
 
 
-def send_message(data: dict) -> Response:
-    """
-    Send message and return response
-    """
-    url = "https://probe.fbrq.cloud/v1/send/1"
-    headers = {'Content-type': 'application/json', 'accept': 'application/json', 'Authorization': OPEN_API_TOKEN}
-    response = requests.post(url, data=json.dumps(data), headers=headers)
-    return response
-
-
 def get_clients(mailing_filter: dict) -> QuerySet:
     """
     Get clients by filter
@@ -58,6 +48,16 @@ def create_messages(messages: list):
         if not batch:
             break
         Message.objects.bulk_create(batch, batch_size)
+
+
+def send_message(data: dict) -> Response:
+    """
+    Send message and return response
+    """
+    url = "https://probe.fbrq.cloud/v1/send/1"
+    headers = {'Content-type': 'application/json', 'accept': 'application/json', 'Authorization': OPEN_API_TOKEN}
+    response = requests.post(url, data=json.dumps(data), headers=headers)
+    return response
 
 
 def start_mailing():

@@ -17,6 +17,32 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'log_format': {
+            'format': '{levelname} {asctime} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'request_handler': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'application/logger.log',
+            'formatter': 'log_format',
+        },
+    },
+    'loggers': {
+        'application': {
+            'handlers': ['request_handler'],
+            'level': 'INFO',
+            'propagate': True
+        }
+    }
+}
 
 # Environment creation
 env = environ.Env(
@@ -67,6 +93,8 @@ CRONJOBS = [
 ]
 
 MIDDLEWARE = [
+    # 'application.middlewares.api_secret_middleware.ApiSecretMiddleware',
+    'application.middlewares.api_logger_middleware.APILogMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

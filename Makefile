@@ -4,7 +4,7 @@ local:
 
 all: makemig migrate up
 
-run: build up
+run: build up migrate
 
 makemig:
 	python manage.py makemigrations

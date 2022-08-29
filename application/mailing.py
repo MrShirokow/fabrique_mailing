@@ -8,13 +8,16 @@ from datetime import datetime
 from requests import Response
 from rest_framework import status
 
+import application.log as log
+
+from config.settings import OPEN_API_TOKEN, MAILING_SERVICE_URL, ACCEPT, CONTENT_TYPE
 from application.entities.client import Client
 from application.entities.message import Message
 from application.entities.notification import Notification
-from config.settings import OPEN_API_TOKEN, MAILING_SERVICE_URL, ACCEPT, CONTENT_TYPE
 
 
-logger = logging.getLogger(__name__)
+logging.basicConfig(filename='application/logger.log',
+                    format='%(levelname)s %(asctime)s %(message)s', level=logging.INFO)
 
 
 def get_clients(mailing_filter: dict) -> QuerySet:
@@ -60,10 +63,11 @@ def send_message(data: dict) -> Response:
     """
     headers = {'Content-type': CONTENT_TYPE, 'accept': ACCEPT, 'Authorization': OPEN_API_TOKEN}
     response = requests.post(MAILING_SERVICE_URL, data=json.dumps(data), headers=headers)
+    logging.info(log.create_mailing_log_message(response.request, response))
     return response
 
 
-def start_mailing():
+def start():
     """
     Start notification mailing and creating messages in database
     """

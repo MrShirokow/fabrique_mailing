@@ -12,11 +12,11 @@ class Client(models.Model):
     mobile_operator_code = models.CharField(validators=[mobile_operator_code_regex], max_length=3)
     time_zone = TimeZoneField(choices_display='WITH_GMT_OFFSET')
 
-    def __str__(self):
-        return f'{self.phone_number}'
-
     class Meta:
         verbose_name = 'client'
         verbose_name_plural = 'clients'
         ordering = ['id']
         app_label = 'application'
+
+    def __str__(self):
+        return f'{self.phone_number}'

@@ -9,11 +9,11 @@ class Notification(models.Model):
     mailing_filter = models.JSONField()
     reached_numbers = ArrayField(models.CharField(max_length=11), default=list, blank=True)
 
-    def __str__(self):
-        return f'notification #{self.id}'
-
     class Meta:
         verbose_name = 'notification'
         verbose_name_plural = 'notifications'
         ordering = ['id']
         app_label = 'application'
+
+    def __str__(self):
+        return f'notification #{self.id}'

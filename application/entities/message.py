@@ -10,11 +10,11 @@ class Message(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     is_sending = models.BooleanField(default=False)
 
-    def __str__(self):
-        return f'message #{self.id}'
-
     class Meta:
         verbose_name = 'message'
         verbose_name_plural = 'messages'
         ordering = ['id']
         app_label = 'application'
+
+    def __str__(self):
+        return f'message #{self.id}'

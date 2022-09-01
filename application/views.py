@@ -20,7 +20,6 @@ class ClientListAPIView(APIView, BasicPagination):
     """
     Get list of all clients or create new client
     """
-
     def get(self, request: Request, format=None) -> Response:
         """
         Get list of clients
@@ -50,7 +49,6 @@ class ClientAPIView(APIView):
     """
     Get, update or delete a client instance
     """
-
     def get(self, request: Request, pk: int, format=None) -> Response:
         """
         Get client by id
@@ -112,6 +110,9 @@ class NotificationListAPIView(APIView, BasicPagination):
 
 
 class NotificationAPIView(APIView, BasicPagination):
+    """
+    Get, update or delete a notification instance
+    """
     def get(self, request: Request, pk: int, format=None) -> Response:
         """
         Get notification by id
@@ -161,6 +162,9 @@ class MessagesCountGroupByStatusAPIView(APIView):
     Get count of messages from existing notifications grouped by status
     """
     def get(self, request: Request, format=None) -> Response:
+        """
+        Get message statistics
+        """
         queryset = Message.objects.values('notification_id', 'is_sending', 'notification__text')\
                                   .annotate(count=Count('is_sending'))\
                                   .values_list('notification_id', 'is_sending', 'count', 'notification__text')

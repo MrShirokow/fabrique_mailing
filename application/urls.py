@@ -1,4 +1,4 @@
-from django.urls import re_path, path
+from django.urls import re_path
 from application.views import ClientListAPIView, ClientAPIView, NotificationListAPIView, NotificationAPIView, \
                               MessageListByNotificationAPIView, MessagesCountGroupByStatusAPIView
 

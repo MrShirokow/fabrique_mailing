@@ -1,7 +1,3 @@
-# for developing
-local:
-	python manage.py runserver
-
 all: makemig migrate up
 
 run: build up migrate
@@ -35,3 +31,6 @@ cronshow:
 
 cronremove:
 	docker exec -it notification_app python manage.py crontab remove
+
+bash:
+	docker exec -it notification_app /bin/bash

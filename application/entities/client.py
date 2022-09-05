@@ -8,8 +8,8 @@ class Client(models.Model):
     mobile_operator_code_regex = RegexValidator(regex=r'^\d{3}$',
                                                 message='Mobile operator code must have a length of 3')
     phone_number = models.CharField(validators=[phone_regex], max_length=11, unique=True, blank=False, null=False)
-    tag = models.CharField(max_length=10)
-    mobile_operator_code = models.CharField(validators=[mobile_operator_code_regex], max_length=3)
+    tag = models.CharField(max_length=10, db_index=True)
+    mobile_operator_code = models.CharField(validators=[mobile_operator_code_regex], max_length=3, db_index=True)
     time_zone = TimeZoneField(choices_display='WITH_GMT_OFFSET')
 
     class Meta:

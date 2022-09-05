@@ -9,7 +9,7 @@ from datetime import datetime
 from requests import Response
 from rest_framework import status
 
-import mailing_service.log_messages_creator as log
+import mailing_service.logging.log_messages_creator as log
 
 from config.settings import OPEN_API_TOKEN, MAILING_SERVICE_URL, ACCEPT, CONTENT_TYPE
 from mailing_service.models.client import Client
@@ -17,7 +17,7 @@ from mailing_service.models.message import Message
 from mailing_service.models.notification import Notification
 
 
-logging.basicConfig(filename=pathlib.Path(__file__).resolve().parent.joinpath('logger.log'),
+logging.basicConfig(filename=pathlib.Path(__file__).resolve().parent.joinpath('logging/logger.log'),
                     format='%(levelname)s %(asctime)s %(message)s', level=logging.INFO)
 
 

@@ -67,16 +67,16 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
 
-    'application',
+    'mailing_service',
 ]
 
 CRONJOBS = [
-    ('* */4 * * *', 'application.mailing.start')
+    ('* */4 * * *', 'mailing_service.mailing.start')
 ]
 
 MIDDLEWARE = [
-    # 'application.middlewares.api_secret_middleware.ApiSecretMiddleware',
-    'application.middlewares.api_logger_middleware.APILogMiddleware',
+    # 'mailing_service.middlewares.api_secret_middleware.ApiSecretMiddleware',
+    'mailing_service.middlewares.api_logger_middleware.APILogMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -153,9 +153,9 @@ USE_DEPRECATED_PYTZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'application/static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'mailing_service/static')
 MEDIA_ULR = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'application/media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'mailing_service/media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

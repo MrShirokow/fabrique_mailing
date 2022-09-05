@@ -11,6 +11,7 @@ https://docs.docker.com/compose/install/
 ### with make
 ```bash
 make run
+make migrate
 ```
 ### without make
 ```bash

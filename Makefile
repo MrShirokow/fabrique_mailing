@@ -1,6 +1,6 @@
 all: makemig migrate up
 
-run: build up migrate
+run: build up
 
 makemig:
 	python manage.py makemigrations

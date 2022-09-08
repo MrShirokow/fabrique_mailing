@@ -1,6 +1,6 @@
 import pytest
 
-from django.db.utils import DataError
+from django.db import DataError
 from django.core.exceptions import ValidationError
 
 from mailing_service.models.client import Client
@@ -25,25 +25,12 @@ def test_client_model():
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize('phone_number, tag, mobile_operator_code, time_zone', [('79001005070', 'tag_1',
-                                                                                 '900', 'Europe/Unknown')])
-def test_client_model_validation_error(phone_number, tag, mobile_operator_code, time_zone):
-    with pytest.raises(ValidationError):
-        Client.objects.create(
-            phone_number=phone_number,
-            tag=tag,
-            mobile_operator_code=mobile_operator_code,
-            time_zone=time_zone,
-        )
-
-
-@pytest.mark.django_db
-@pytest.mark.parametrize('phone_number, tag, mobile_operator_code, time_zone', [('79001005070', 'tag_1',
-                                                                                 '9111', 'Europe/Moscow'),
-                                                                                ('7900100507080', 'tag_1',
-                                                                                 '900', 'Europe/Moscow')])
-def test_client_model_data_error(phone_number, tag, mobile_operator_code, time_zone):
-    with pytest.raises(DataError):
+@pytest.mark.parametrize('error, phone_number, tag, mobile_operator_code, time_zone', [
+    (ValidationError, '79001005070', 'tag_1', '900', 'Europe/Unknown'),
+    (DataError, '79001005070', 'tag_1', '9111', 'Europe/Moscow'),
+    (DataError, '7900100507080', 'tag_1', '900', 'Europe/Moscow')])
+def test_client_model_with_error(error, phone_number, tag, mobile_operator_code, time_zone):
+    with pytest.raises(error):
         Client.objects.create(
             phone_number=phone_number,
             tag=tag,
@@ -70,23 +57,17 @@ def test_notification_model():
 
 @pytest.mark.django_db
 def test_message_model():
-    notification = Notification.objects.create(
-        start_datetime='2022-09-06 10:00:00',
-        end_datetime='2022-09-10 23:59:00',
-        text='Attention! Notification text!',
-        mailing_filter={'tag': 'tag_1', 'mobile_operator_code': 900},
-    )
-    client = Client.objects.create(
-        phone_number=79007886151,
-        tag='tag_1',
-        mobile_operator_code=900,
-        time_zone='Asia/Omsk',
-    )
-    message = Message.objects.create(
-        notification=notification,
-        client=client,
-        is_sending=True,
-    )
+    notification = Notification.objects.create(start_datetime='2022-09-06 10:00:00',
+                                               end_datetime='2022-09-10 23:59:00',
+                                               text='Attention! Notification text!',
+                                               mailing_filter={'tag': 'tag_1', 'mobile_operator_code': 900})
+    client = Client.objects.create(phone_number=79007886151,
+                                   tag='tag_1',
+                                   mobile_operator_code=900,
+                                   time_zone='Asia/Omsk')
+    message = Message.objects.create(notification=notification,
+                                     client=client,
+                                     is_sending=True)
     assert Message.objects.count() == 1
     assert message.notification == notification
     assert message.client == client

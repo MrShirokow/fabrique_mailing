@@ -34,3 +34,6 @@ cronremove:
 
 bash:
 	docker exec -it notification_app /bin/bash
+
+test:
+	pytest -v -p no:warnings

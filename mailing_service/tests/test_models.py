@@ -1,5 +1,8 @@
 import pytest
 
+from django.db.utils import DataError
+from django.core.exceptions import ValidationError
+
 from mailing_service.models.client import Client
 from mailing_service.models.message import Message
 from mailing_service.models.notification import Notification
@@ -8,16 +11,45 @@ from mailing_service.models.notification import Notification
 @pytest.mark.django_db
 def test_client_model():
     client = Client.objects.create(
-        phone_number=79007886151,
-        tag='good',
-        mobile_operator_code=900,
-        time_zone='Asia/Omsk',
+        phone_number='79007886151',
+        tag='tag_1',
+        mobile_operator_code='900',
+        time_zone='Asia/Yekaterinburg',
     )
     assert Client.objects.count() == 1
-    assert client.phone_number == 79007886151
-    assert client.tag == 'good'
-    assert client.mobile_operator_code == 900
-    assert client.time_zone == 'Asia/Omsk'
+    assert client.phone_number == '79007886151'
+    assert client.tag == 'tag_1'
+    assert client.mobile_operator_code == '900'
+    assert client.time_zone == 'Asia/Yekaterinburg'
+    assert client.__str__() == '79007886151'
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('phone_number, tag, mobile_operator_code, time_zone', [('79001005070', 'tag_1',
+                                                                                 '900', 'Europe/Unknown')])
+def test_client_model_validation_error(phone_number, tag, mobile_operator_code, time_zone):
+    with pytest.raises(ValidationError):
+        Client.objects.create(
+            phone_number=phone_number,
+            tag=tag,
+            mobile_operator_code=mobile_operator_code,
+            time_zone=time_zone,
+        )
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('phone_number, tag, mobile_operator_code, time_zone', [('79001005070', 'tag_1',
+                                                                                 '9111', 'Europe/Moscow'),
+                                                                                ('7900100507080', 'tag_1',
+                                                                                 '900', 'Europe/Moscow')])
+def test_client_model_data_error(phone_number, tag, mobile_operator_code, time_zone):
+    with pytest.raises(DataError):
+        Client.objects.create(
+            phone_number=phone_number,
+            tag=tag,
+            mobile_operator_code=mobile_operator_code,
+            time_zone=time_zone,
+        )
 
 
 @pytest.mark.django_db
@@ -33,6 +65,7 @@ def test_notification_model():
     assert notification.end_datetime == '2022-09-10 23:59:00'
     assert notification.text == 'Attention! Notification text!'
     assert notification.mailing_filter == {'tag': 'tag_1', 'mobile_operator_code': 900}
+    assert notification.__str__() == f'notification #{notification.id}'
 
 
 @pytest.mark.django_db
@@ -45,7 +78,7 @@ def test_message_model():
     )
     client = Client.objects.create(
         phone_number=79007886151,
-        tag='good',
+        tag='tag_1',
         mobile_operator_code=900,
         time_zone='Asia/Omsk',
     )
@@ -58,3 +91,4 @@ def test_message_model():
     assert message.notification == notification
     assert message.client == client
     assert message.is_sending is True
+    assert message.__str__() == f'message #{message.id}'

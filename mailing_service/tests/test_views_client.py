@@ -14,21 +14,15 @@ def api_client():
 
 @pytest.fixture
 def create_client_test_data():
-    """
-    Creating test data for testing client views
-    """
-    client_creating_data = [Client(**{'phone_number': '79007886151', 'tag': 'tag_1',
-                                      'mobile_operator_code': '900', 'time_zone': 'Europe/Moscow'}),
-                            Client(**{'phone_number': '79220009912', 'tag': 'tag_2',
-                                      'mobile_operator_code': '922', 'time_zone': 'Asia/Omsk'})]
-    Client.objects.bulk_create(client_creating_data)
+    creating_data = [Client(**{'phone_number': '79007886151', 'tag': 'tag_1',
+                               'mobile_operator_code': '900', 'time_zone': 'Europe/Moscow'}),
+                     Client(**{'phone_number': '79220009912', 'tag': 'tag_2',
+                               'mobile_operator_code': '922', 'time_zone': 'Asia/Omsk'})]
+    Client.objects.bulk_create(creating_data)
 
 
 @pytest.mark.django_db
 def test_client_list_get_200(api_client, create_client_test_data):
-    """
-    Testing getting a list of clients (successfully)
-    """
     url = reverse('client-list-view')
     response = api_client.get(url)
     assert response.status_code == status.HTTP_200_OK
@@ -45,9 +39,6 @@ def test_client_list_get_200(api_client, create_client_test_data):
 
 @pytest.mark.django_db
 def test_client_detail_get_200(api_client, create_client_test_data):
-    """
-    Testing getting a client by id (successfully)
-    """
     client_id = Client.objects.get(phone_number=79007886151).id
     url = reverse('client-detail-view', kwargs={'pk': client_id})
     response = api_client.get(url)
@@ -60,19 +51,13 @@ def test_client_detail_get_200(api_client, create_client_test_data):
 
 @pytest.mark.django_db
 def test_client_detail_get_404(api_client, create_client_test_data):
-    """
-    Testing getting a client by id (not found, invalid id)
-    """
-    url = reverse('client-detail-view', kwargs={'pk': 100})
+    url = reverse('client-detail-view', kwargs={'pk': 1})
     response = api_client.get(url)
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.django_db
 def test_client_post_201(api_client):
-    """
-    Testing creating a client (successfully)
-    """
     url = reverse('client-list-view')
     creating_data = {'phone_number': '79007886151',
                      'tag': 'tag_1',
@@ -88,9 +73,6 @@ def test_client_post_201(api_client):
     ('79007886151', 'tag_1', '901', 'Asia/Omsk'),
     ('79007886151', 'tag_1', '900', 'Asia/Unknown')])
 def test_client_post_400(api_client, phone_number, tag, mobile_operator_code, time_zone):
-    """
-    Testing creating a client (bad request)
-    """
     url = reverse('client-list-view')
     creating_data = {'phone_number': phone_number, 'tag': tag,
                      'mobile_operator_code': mobile_operator_code, 'time_zone': time_zone, }
@@ -100,9 +82,6 @@ def test_client_post_400(api_client, phone_number, tag, mobile_operator_code, ti
 
 @pytest.mark.django_db
 def test_client_put_200(api_client, create_client_test_data):
-    """
-    Testing updating a client (successfully)
-    """
     client_id = Client.objects.get(phone_number=79220009912).id
     url = reverse('client-detail-view', kwargs={'pk': client_id})
     response = api_client.put(url, data={'tag': 'tag_new', 'time_zone': 'Europe/Moscow'})
@@ -114,9 +93,6 @@ def test_client_put_200(api_client, create_client_test_data):
     ('7922000991200', 'tag_1', '900', 'Asia/Omsk'),
     ('79007886151', 'tag_1', '900', 'Asia/Unknown')])
 def test_client_put_400(api_client, create_client_test_data, phone_number, tag, mobile_operator_code, time_zone):
-    """
-    Testing updating a client (bad request)
-    """
     client_id = Client.objects.get(phone_number=79220009912).id
     url = reverse('client-detail-view', kwargs={'pk': client_id})
     response = api_client.put(url, data={'phone_number': phone_number, 'tag': tag,
@@ -126,19 +102,13 @@ def test_client_put_400(api_client, create_client_test_data, phone_number, tag, 
 
 @pytest.mark.django_db
 def test_client_put_404(api_client, create_client_test_data):
-    """
-    Testing updating a client (not found)
-    """
-    url = reverse('client-detail-view', kwargs={'pk': 100})
+    url = reverse('client-detail-view', kwargs={'pk': 1})
     response = api_client.put(url, data={'tag': 'tag_0'})
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.django_db
 def test_client_delete_204(api_client, create_client_test_data):
-    """
-    Testing deleting a client (successfully)
-    """
     client_id = Client.objects.get(phone_number=79220009912).id
     url = reverse('client-detail-view', kwargs={'pk': client_id})
     response = api_client.delete(url)
@@ -147,9 +117,6 @@ def test_client_delete_204(api_client, create_client_test_data):
 
 @pytest.mark.django_db
 def test_client_delete_404(api_client, create_client_test_data):
-    """
-    Testing deleting a client (not found)
-    """
-    url = reverse('client-detail-view', kwargs={'pk': 100})
+    url = reverse('client-detail-view', kwargs={'pk': 1})
     response = api_client.delete(url)
     assert response.status_code == status.HTTP_404_NOT_FOUND

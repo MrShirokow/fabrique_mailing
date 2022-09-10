@@ -115,7 +115,7 @@ def test_client_put_200(api_client, create_client_test_data):
     ('79007886151', 'tag_1', '900', 'Asia/Unknown')])
 def test_client_put_400(api_client, create_client_test_data, phone_number, tag, mobile_operator_code, time_zone):
     """
-    Testing updating a client (successfully)
+    Testing updating a client (bad request)
     """
     client_id = Client.objects.get(phone_number=79220009912).id
     url = reverse('client-detail-view', kwargs={'pk': client_id})
@@ -127,7 +127,7 @@ def test_client_put_400(api_client, create_client_test_data, phone_number, tag, 
 @pytest.mark.django_db
 def test_client_put_404(api_client, create_client_test_data):
     """
-    Testing updating a client (successfully)
+    Testing updating a client (not found)
     """
     url = reverse('client-detail-view', kwargs={'pk': 100})
     response = api_client.put(url, data={'tag': 'tag_0'})
@@ -148,7 +148,7 @@ def test_client_delete_204(api_client, create_client_test_data):
 @pytest.mark.django_db
 def test_client_delete_404(api_client, create_client_test_data):
     """
-    Testing updating a client (successfully)
+    Testing deleting a client (not found)
     """
     url = reverse('client-detail-view', kwargs={'pk': 100})
     response = api_client.delete(url)

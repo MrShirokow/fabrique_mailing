@@ -21,7 +21,7 @@ def create_notification_test_data():
                      Notification(**{'start_datetime': '2022-09-08 10:00:00',
                                      'end_datetime': '2022-09-20 23:59:00',
                                      'text': 'Some text for client',
-                                     'mailing_filter': {'tag': 'tag_2', 'mobile_operator_code': 900}})]
+                                     'mailing_filter': {'tag': 'tag_2', 'mobile_operator_code': '900'}})]
     Notification.objects.bulk_create(creating_data)
 
 
@@ -38,7 +38,7 @@ def test_notification_list_get_200(api_client, create_notification_test_data):
     assert response.data[1]['start_datetime'] == '2022-09-08T10:00:00'
     assert response.data[1]['end_datetime'] == '2022-09-20T23:59:00'
     assert response.data[1]['text'] == 'Some text for client'
-    assert response.data[1]['mailing_filter'] == {'tag': 'tag_2', 'mobile_operator_code': 900}
+    assert response.data[1]['mailing_filter'] == {'tag': 'tag_2', 'mobile_operator_code': '900'}
 
 
 @pytest.mark.django_db
@@ -66,7 +66,7 @@ def test_notification_post_201(api_client):
     creating_data = {'start_datetime': '2022-09-01 10:00:00',
                      'end_datetime': '2022-09-15 10:00:00',
                      'text': 'Hello!',
-                     'mailing_filter': {'tag': 'tag_1', 'mobile_operator_code': 900}}
+                     'mailing_filter': {'tag': 'tag_1', 'mobile_operator_code': '900'}}
     response = api_client.post(url, data=creating_data, format='json')
     assert response.status_code == status.HTTP_201_CREATED
 
@@ -91,7 +91,7 @@ def test_notification_put_200(api_client, create_notification_test_data):
     response = api_client.put(url, data={
         'text': 'New text for notification',
         'end_datetime': '2022-09-29 23:59:00',
-        'mailing_filter': {'tag': 'tag_2', 'mobile_operator_code': 922}}, format='json')
+        'mailing_filter': {'tag': 'tag_2', 'mobile_operator_code': '922'}}, format='json')
     assert response.status_code == status.HTTP_200_OK
 
 

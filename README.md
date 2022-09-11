@@ -29,6 +29,19 @@ make superuser
 docker exec -it notification_app python manage.py createsuperuser
 ```
 
+## Start tests
+### with make
+```bash
+make test
+```
+### without make
+```bash
+pip install pytest==7.1.3 &
+pip install pytest-django==4.5.2 &
+pip install pytest-cov==3.0.0 &
+pytest -v -p no:warnings
+```
+
 # Основное задание
 Рассылка работает через планировщик `cron`. 
 Текущая настройка сделана на запуск каждые 4 часа.

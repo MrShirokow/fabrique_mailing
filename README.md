@@ -30,15 +30,16 @@ docker exec -it notification_app python manage.py createsuperuser
 ```
 
 ## Start tests
-### with make
+### install requirements
+```bash
+pip install -r requirements.txt 
+```
+### run with make
 ```bash
 make test
 ```
-### without make
+### run without make
 ```bash
-pip install pytest==7.1.3 &
-pip install pytest-django==4.5.2 &
-pip install pytest-cov==3.0.0 &
 pytest -v -p no:warnings
 ```
 

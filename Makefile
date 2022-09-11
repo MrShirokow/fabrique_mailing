@@ -36,7 +36,4 @@ bash:
 	docker exec -it notification_app /bin/bash
 
 test:
-	pip install pytest==7.1.3 &
-	pip install pytest-django==4.5.2 &
-	pip install pytest-cov==3.0.0 &
 	pytest -v -p no:warnings

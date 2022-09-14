@@ -1,11 +1,14 @@
 import pytest
 
+from django.db.models import Count
 from django.urls import reverse
 from rest_framework import status
 
 from mailing_service.models.client import Client
 from mailing_service.models.message import Message
 from mailing_service.models.notification import Notification
+from mailing_service.serializers.message import MessageSerializer
+from mailing_service.serializers.message_stats import serialize_stats, get_stats_dict
 
 
 @pytest.fixture
@@ -37,19 +40,17 @@ def create_test_data():
                            'client': Client.objects.filter(tag='tag_2').first(),
                            'is_sending': True})]
     Message.objects.bulk_create(msg_data)
+    return {'notification_data': notification_data, 'client_data': client_data, 'msg_data': msg_data}
 
 
 @pytest.mark.django_db
 def test_message_list_by_notification_200(api_client, create_test_data):
     notification_id = Notification.objects.filter(text='Attention! Notification text!').first().id
-    client_id = Client.objects.filter(phone_number=79220009912).first().id
     url = reverse('message-list-by-notification-view', kwargs={'pk': notification_id})
+    serializer_data = MessageSerializer([create_test_data['msg_data'][0]], many=True).data
     response = api_client.get(url)
-    data = response.data['sent_messages']
     assert response.status_code == status.HTTP_200_OK
-    assert data[0]['notification'] == notification_id
-    assert data[0]['client'] == client_id
-    assert data[0]['is_sending']
+    assert response.data['sent_messages'] == serializer_data
 
 
 @pytest.mark.django_db
@@ -61,15 +62,11 @@ def test_message_list_by_notification_404(api_client, create_test_data):
 
 @pytest.mark.django_db
 def test_message_stats_view(api_client, create_test_data):
-    notifications = Notification.objects.all()
     url = reverse('message-stats-view')
+    queryset = Message.objects.values('notification_id', 'is_sending', 'notification__text') \
+                              .annotate(count=Count('is_sending')) \
+                              .values_list('notification_id', 'is_sending', 'count', 'notification__text')
+    serializer_data = serialize_stats(get_stats_dict(queryset))
     response = api_client.get(url)
     assert response.status_code == status.HTTP_200_OK
-    assert response.data[0]['notification'] == notifications.get(text='Attention! Notification text!').id
-    assert response.data[0]['text'] == 'Attention! Notification text!'
-    assert response.data[0]['messages'][0]['count'] == 1
-    assert response.data[0]['messages'][1]['count'] == 0
-    assert response.data[1]['notification'] == notifications.get(text='Some text for client').id
-    assert response.data[1]['text'] == 'Some text for client'
-    assert response.data[1]['messages'][0]['count'] == 1
-    assert response.data[1]['messages'][1]['count'] == 0
+    assert response.data == serializer_data

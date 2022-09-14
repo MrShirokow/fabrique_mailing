@@ -4,6 +4,7 @@ from django.urls import reverse
 from rest_framework import status
 
 from mailing_service.models.notification import Notification
+from mailing_service.serializers.notification import NotificationSerializer
 
 
 @pytest.fixture
@@ -14,43 +15,35 @@ def api_client():
 
 @pytest.fixture
 def create_notification_test_data():
-    creating_data = [Notification(**{'start_datetime': '2022-09-01 10:00:00',
-                                     'end_datetime': '2022-09-25 23:59:00',
+    creating_data = [Notification(**{'start_datetime': '2022-09-01T10:00:00',
+                                     'end_datetime': '2022-09-25T23:59:00',
                                      'text': 'Attention! Notification text!',
                                      'mailing_filter': {'tag': 'tag_1'}}),
-                     Notification(**{'start_datetime': '2022-09-08 10:00:00',
-                                     'end_datetime': '2022-09-20 23:59:00',
+                     Notification(**{'start_datetime': '2022-09-08T10:00:00',
+                                     'end_datetime': '2022-09-20T23:59:00',
                                      'text': 'Some text for client',
                                      'mailing_filter': {'tag': 'tag_2', 'mobile_operator_code': '900'}})]
     Notification.objects.bulk_create(creating_data)
+    return creating_data
 
 
 @pytest.mark.django_db
 def test_notification_list_get_200(api_client, create_notification_test_data):
     url = reverse('notification-list-view')
+    serializer_data = NotificationSerializer(create_notification_test_data, many=True).data
     response = api_client.get(url)
     assert response.status_code == status.HTTP_200_OK
-    assert len(response.data) == 2
-    assert response.data[0]['start_datetime'] == '2022-09-01T10:00:00'
-    assert response.data[0]['end_datetime'] == '2022-09-25T23:59:00'
-    assert response.data[0]['text'] == 'Attention! Notification text!'
-    assert response.data[0]['mailing_filter'] == {'tag': 'tag_1'}
-    assert response.data[1]['start_datetime'] == '2022-09-08T10:00:00'
-    assert response.data[1]['end_datetime'] == '2022-09-20T23:59:00'
-    assert response.data[1]['text'] == 'Some text for client'
-    assert response.data[1]['mailing_filter'] == {'tag': 'tag_2', 'mobile_operator_code': '900'}
+    assert response.data == serializer_data
 
 
 @pytest.mark.django_db
 def test_notification_detail_get_200(api_client, create_notification_test_data):
-    notification_id = Notification.objects.filter(text='Attention! Notification text!').first().id
-    url = reverse('notification-detail-view', kwargs={'pk': notification_id})
+    notification = Notification.objects.filter(text='Attention! Notification text!').first()
+    url = reverse('notification-detail-view', kwargs={'pk': notification.id})
+    serializer_data = NotificationSerializer(notification).data
     response = api_client.get(url)
     assert response.status_code == status.HTTP_200_OK
-    assert response.data['start_datetime'] == '2022-09-01T10:00:00'
-    assert response.data['end_datetime'] == '2022-09-25T23:59:00'
-    assert response.data['text'] == 'Attention! Notification text!'
-    assert response.data['mailing_filter'] == {'tag': 'tag_1'}
+    assert response.data == serializer_data
 
 
 @pytest.mark.django_db

@@ -4,6 +4,7 @@ from django.urls import reverse
 from rest_framework import status
 
 from mailing_service.models.client import Client
+from mailing_service.serializers.client import ClientSerializer
 
 
 @pytest.fixture
@@ -19,34 +20,26 @@ def create_client_test_data():
                      Client(**{'phone_number': '79220009912', 'tag': 'tag_2',
                                'mobile_operator_code': '922', 'time_zone': 'Asia/Omsk'})]
     Client.objects.bulk_create(creating_data)
+    return creating_data
 
 
 @pytest.mark.django_db
 def test_client_list_get_200(api_client, create_client_test_data):
     url = reverse('client-list-view')
+    serializer_data = ClientSerializer(create_client_test_data, many=True).data
     response = api_client.get(url)
     assert response.status_code == status.HTTP_200_OK
-    assert len(response.data) == 2
-    assert response.data[0]['phone_number'] == '79007886151'
-    assert response.data[0]['tag'] == 'tag_1'
-    assert response.data[0]['mobile_operator_code'] == '900'
-    assert response.data[0]['time_zone'] == 'Europe/Moscow'
-    assert response.data[1]['phone_number'] == '79220009912'
-    assert response.data[1]['tag'] == 'tag_2'
-    assert response.data[1]['mobile_operator_code'] == '922'
-    assert response.data[1]['time_zone'] == 'Asia/Omsk'
+    assert response.data == serializer_data
 
 
 @pytest.mark.django_db
 def test_client_detail_get_200(api_client, create_client_test_data):
-    client_id = Client.objects.get(phone_number=79007886151).id
-    url = reverse('client-detail-view', kwargs={'pk': client_id})
+    client = Client.objects.get(phone_number=79007886151)
+    url = reverse('client-detail-view', kwargs={'pk': client.id})
+    serializer_data = ClientSerializer(client).data
     response = api_client.get(url)
     assert response.status_code == status.HTTP_200_OK
-    assert response.data['phone_number'] == '79007886151'
-    assert response.data['tag'] == 'tag_1'
-    assert response.data['mobile_operator_code'] == '900'
-    assert response.data['time_zone'] == 'Europe/Moscow'
+    assert response.data == serializer_data
 
 
 @pytest.mark.django_db

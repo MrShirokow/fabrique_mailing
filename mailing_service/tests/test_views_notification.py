@@ -72,39 +72,46 @@ def test_notification_post_201(api_client):
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize('start_datetime, end_datetime, text, mailing_filter', [
-    ('2022-09-32 10:00:00', '2022-09-20 23:59:00', 'Some text for client', {'tag': 'tag_1'}),
-    ('2022-09-01 10:00:00', '2022-09-20 23:59:00', 'Text', {'what': 'is this'}),
-    ('date', 'now', 'Text', {'tag': 'tag_1'})])
-def test_notification_post_400(api_client, start_datetime, end_datetime, text, mailing_filter):
+@pytest.mark.parametrize('data', [
+    ({'start_datetime': '2022-09-10 10:00:00', 'end_datetime': '2022-09-20 23:59:00'}),
+    ({'text': 'Some text for client', 'mailing_filter': {'tag': 'tag_1'}}),
+    ({'start_datetime': '2022-09-32 10:00:00', 'end_datetime': '2022-09-20 23:59:00',
+      'text': 'Some text for client', 'mailing_filter': {'tag': 'tag_1'}}),
+    ({'start_datetime': '2022-09-01 10:00:00', 'end_datetime': '2022-09-20 23:59:00',
+      'text': 'Text', 'mailing_filter': {'what': 'is this'}}),
+    ({'start_datetime': '2022-09-01 10:00:00', 'end_datetime': '2022-09-20 23:59:00',
+      'text': 'Text', 'mailing_filter': 'filter'})])
+def test_notification_post_400(api_client, data):
     url = reverse('notification-list-view')
-    creating_data = {'start_datetime': start_datetime, 'end_datetime': end_datetime,
-                     'text': text, 'mailing_filter': mailing_filter, }
-    response = api_client.post(url, data=creating_data, format='json')
+    response = api_client.post(url, data=data, format='json')
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 @pytest.mark.django_db
-def test_notification_put_200(api_client, create_notification_test_data):
+@pytest.mark.parametrize('data', [
+    ({'start_datetime': '2022-09-03 10:00:00', 'end_datetime': '2022-09-20 23:59:00',
+      'text': 'Some text for client', 'mailing_filter': {'tag': 'tag_2', 'mobile_operator_code': '922'}}),
+    ({'start_datetime': '2022-09-10 10:00:00', 'end_datetime': '2022-09-29 23:59:00'}),
+    ({'mailing_filter': {'tag': 'tag_new'}}),
+    ({'text': 'New text!!!'})])
+def test_notification_put_200(api_client, create_notification_test_data, data):
     notification_id = Notification.objects.filter(text='Attention! Notification text!').first().id
     url = reverse('notification-detail-view', kwargs={'pk': notification_id})
-    response = api_client.put(url, data={
-        'text': 'New text for notification',
-        'end_datetime': '2022-09-29 23:59:00',
-        'mailing_filter': {'tag': 'tag_2', 'mobile_operator_code': '922'}}, format='json')
+    response = api_client.put(url, data=data, format='json')
     assert response.status_code == status.HTTP_200_OK
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize('start_datetime, end_datetime, text, mailing_filter', [
-    ('2022-09-32 10:00:00', '2022-09-20 23:59:00', 'Some text for client', {'tag': 'tag_1'}),
-    ('date', 'now', 'Text', {'tag': 'tag_1'})])
-def test_notification_put_400(api_client, create_notification_test_data, start_datetime,
-                              end_datetime, text, mailing_filter):
+@pytest.mark.parametrize('data', [
+    ({'start_datetime': '2022-09-10 10:00:00', 'end_datetime': '2022-09-32 23:59:00'}),
+    ({'text': 'Some text for client', 'mailing_filter': {'unknown': 'attr'}}),
+    ({'mailing_filter': 'filter'}),
+    ({'start_datetime': '2022-09-32 10:00:00', 'end_datetime': '2022-09-20 23:59:00',
+      'text': 'Some text for client', 'mailing_filter': {'tag': 'tag_1'}})])
+def test_notification_put_400(api_client, create_notification_test_data, data):
     notification_id = Notification.objects.filter(text='Some text for client').first().id
     url = reverse('notification-detail-view', kwargs={'pk': notification_id})
-    response = api_client.put(url, data={'start_datetime': start_datetime, 'end_datetime': end_datetime,
-                                         'text': text, 'mailing_filter': mailing_filter}, format='json')
+    response = api_client.put(url, data=data, format='json')
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 

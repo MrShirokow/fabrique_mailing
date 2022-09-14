@@ -33,11 +33,11 @@ def create_test_data():
                              'mobile_operator_code': '922', 'time_zone': 'Asia/Omsk'})]
     Client.objects.bulk_create(client_data)
     Notification.objects.bulk_create(notification_data)
-    msg_data = [Message(**{'notification': Notification.objects.filter(text='Attention! Notification text!').first(),
-                           'client': Client.objects.filter(tag='tag_1').first(),
+    msg_data = [Message(**{'notification': notification_data[0],
+                           'client': client_data[1],
                            'is_sending': True}),
-                Message(**{'notification': Notification.objects.filter(text='Some text for client').first(),
-                           'client': Client.objects.filter(tag='tag_2').first(),
+                Message(**{'notification': notification_data[1],
+                           'client': client_data[0],
                            'is_sending': True})]
     Message.objects.bulk_create(msg_data)
     return {'notification_data': notification_data, 'client_data': client_data, 'msg_data': msg_data}

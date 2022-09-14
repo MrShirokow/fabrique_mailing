@@ -38,7 +38,7 @@ def test_notification_list_get_200(api_client, create_notification_test_data):
 
 @pytest.mark.django_db
 def test_notification_detail_get_200(api_client, create_notification_test_data):
-    notification = Notification.objects.filter(text='Attention! Notification text!').first()
+    notification = create_notification_test_data[0]
     url = reverse('notification-detail-view', kwargs={'pk': notification.id})
     serializer_data = NotificationSerializer(notification).data
     response = api_client.get(url)
@@ -88,7 +88,7 @@ def test_notification_post_400(api_client, data):
     ({'mailing_filter': {'tag': 'tag_new'}}),
     ({'text': 'New text!!!'})])
 def test_notification_put_200(api_client, create_notification_test_data, data):
-    notification_id = Notification.objects.filter(text='Attention! Notification text!').first().id
+    notification_id = create_notification_test_data[0].id
     url = reverse('notification-detail-view', kwargs={'pk': notification_id})
     response = api_client.put(url, data=data, format='json')
     assert response.status_code == status.HTTP_200_OK
@@ -102,7 +102,7 @@ def test_notification_put_200(api_client, create_notification_test_data, data):
     ({'start_datetime': '2022-09-32 10:00:00', 'end_datetime': '2022-09-20 23:59:00',
       'text': 'Some text for client', 'mailing_filter': {'tag': 'tag_1'}})])
 def test_notification_put_400(api_client, create_notification_test_data, data):
-    notification_id = Notification.objects.filter(text='Some text for client').first().id
+    notification_id = create_notification_test_data[0].id
     url = reverse('notification-detail-view', kwargs={'pk': notification_id})
     response = api_client.put(url, data=data, format='json')
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -117,7 +117,7 @@ def test_notification_put_404(api_client, create_notification_test_data):
 
 @pytest.mark.django_db
 def test_notification_delete_204(api_client, create_notification_test_data):
-    notification_id = Notification.objects.filter(text='Attention! Notification text!').first().id
+    notification_id = create_notification_test_data[0].id
     url = reverse('notification-detail-view', kwargs={'pk': notification_id})
     response = api_client.delete(url)
     assert response.status_code == status.HTTP_204_NO_CONTENT

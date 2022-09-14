@@ -34,7 +34,7 @@ def test_client_list_get_200(api_client, create_client_test_data):
 
 @pytest.mark.django_db
 def test_client_detail_get_200(api_client, create_client_test_data):
-    client = Client.objects.get(phone_number=79007886151)
+    client = create_client_test_data[0]
     url = reverse('client-detail-view', kwargs={'pk': client.id})
     serializer_data = ClientSerializer(client).data
     response = api_client.get(url)
@@ -80,7 +80,7 @@ def test_client_post_400(api_client, data):
     ({'phone_number': '79017886151', 'mobile_operator_code': '901'}),
     ({'time_zone': 'Asia/Yekaterinburg'})])
 def test_client_put_200(api_client, create_client_test_data, data):
-    client_id = Client.objects.get(phone_number=79220009912).id
+    client_id = create_client_test_data[0].id
     url = reverse('client-detail-view', kwargs={'pk': client_id})
     response = api_client.put(url, data=data)
     assert response.status_code == status.HTTP_200_OK
@@ -94,7 +94,7 @@ def test_client_put_200(api_client, create_client_test_data, data):
     ({'phone_number': '79881003340'}),
     ({'mobile_operator_code': '933'})])
 def test_client_put_400(api_client, create_client_test_data, data):
-    client_id = Client.objects.get(phone_number=79220009912).id
+    client_id = create_client_test_data[0].id
     url = reverse('client-detail-view', kwargs={'pk': client_id})
     response = api_client.put(url, data=data)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -109,7 +109,7 @@ def test_client_put_404(api_client, create_client_test_data):
 
 @pytest.mark.django_db
 def test_client_delete_204(api_client, create_client_test_data):
-    client_id = Client.objects.get(phone_number=79220009912).id
+    client_id = create_client_test_data[0].id
     url = reverse('client-detail-view', kwargs={'pk': client_id})
     response = api_client.delete(url)
     assert response.status_code == status.HTTP_204_NO_CONTENT

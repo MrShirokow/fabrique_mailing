@@ -45,7 +45,7 @@ def create_test_data():
 
 @pytest.mark.django_db
 def test_message_list_by_notification_200(api_client, create_test_data):
-    notification_id = Notification.objects.filter(text='Attention! Notification text!').first().id
+    notification_id = create_test_data['notification_data'][0].id
     url = reverse('message-list-by-notification-view', kwargs={'pk': notification_id})
     serializer_data = MessageSerializer([create_test_data['msg_data'][0]], many=True).data
     response = api_client.get(url)

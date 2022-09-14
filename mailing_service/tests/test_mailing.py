@@ -8,7 +8,7 @@ from mailing_service.models.notification import Notification
 
 
 @pytest.fixture
-def create_test_data():
+def mailing_test_data():
     start_datetime = (datetime.date.today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
     end_datetime = (datetime.date.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
     notification_data = [Notification(**{'start_datetime': f'{start_datetime} 10:00:00',
@@ -35,25 +35,25 @@ def create_test_data():
 
 
 @pytest.mark.django_db
-def test_mailing_get_notification(create_test_data):
+def test_mailing_get_notification(mailing_test_data):
     notifications = mailing.get_notifications()
-    assert list(notifications) == create_test_data['notification_data'][:2]
+    assert list(notifications) == mailing_test_data['notification_data'][:2]
 
 
 @pytest.mark.django_db
-def test_mailing_get_clients(create_test_data):
+def test_mailing_get_clients(mailing_test_data):
     clients = mailing.get_clients({'tag': 'tag_1', 'mobile_operator_code': '922'})
-    expected_client = create_test_data['client_data'][0]
+    expected_client = mailing_test_data['client_data'][0]
     assert list(clients) == [(expected_client.id, expected_client.phone_number)]
 
 
 @pytest.mark.django_db
-def test_mailing_create_messages(create_test_data):
-    messages = [Message(**{'notification': create_test_data['notification_data'][0],
-                           'client': create_test_data['client_data'][1],
+def test_mailing_create_messages(mailing_test_data):
+    messages = [Message(**{'notification': mailing_test_data['notification_data'][0],
+                           'client': mailing_test_data['client_data'][1],
                            'is_sending': True}),
-                Message(**{'notification': create_test_data['notification_data'][1],
-                           'client': create_test_data['client_data'][0],
+                Message(**{'notification': mailing_test_data['notification_data'][1],
+                           'client': mailing_test_data['client_data'][0],
                            'is_sending': True})]
     mailing.create_messages(messages)
     assert Message.objects.count() == 2
@@ -69,7 +69,7 @@ def test_mailing_send_message():
 
 
 @pytest.mark.django_db
-def test_start_mailing(create_test_data):
+def test_start_mailing(mailing_test_data):
     assert Message.objects.count() == 0
     mailing.start()
     assert Message.objects.count() == 3

@@ -68,35 +68,42 @@ def test_client_post_201(api_client):
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize('phone_number, tag, mobile_operator_code, time_zone', [
-    ('7900788615100', 'tag_1', '900', 'Asia/Omsk'),
-    ('79007886151', 'tag_1', '901', 'Asia/Omsk'),
-    ('79007886151', 'tag_1', '900', 'Asia/Unknown')])
-def test_client_post_400(api_client, phone_number, tag, mobile_operator_code, time_zone):
+@pytest.mark.parametrize('data', [
+    ({'tag': 'tag_new', 'time_zone': 'Europe/Moscow'}),
+    ({'phone_number': '79017886151', 'mobile_operator_code': '901'}),
+    ({'phone_number': '7900788615100', 'tag': 'tag_1', 'mobile_operator_code': '900', 'time_zone': 'Asia/Omsk'}),
+    ({'phone_number': '79007886151', 'tag': 'tag_1', 'mobile_operator_code': '901', 'time_zone': 'Asia/Omsk'}),
+    ({'phone_number': '79017886151', 'tag': 'tag_1', 'mobile_operator_code': '901', 'time_zone': 'Asia/Unknown'})])
+def test_client_post_400(api_client, data):
     url = reverse('client-list-view')
-    creating_data = {'phone_number': phone_number, 'tag': tag,
-                     'mobile_operator_code': mobile_operator_code, 'time_zone': time_zone, }
-    response = api_client.post(url, data=creating_data)
+    response = api_client.post(url, data=data)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 @pytest.mark.django_db
-def test_client_put_200(api_client, create_client_test_data):
+@pytest.mark.parametrize('data', [
+    ({'tag': 'tag_new', 'time_zone': 'Europe/Moscow'}),
+    ({'phone_number': '79017886151', 'tag': 'tag_1', 'mobile_operator_code': '901', 'time_zone': 'Asia/Omsk'}),
+    ({'phone_number': '79017886151', 'mobile_operator_code': '901'}),
+    ({'time_zone': 'Asia/Yekaterinburg'})])
+def test_client_put_200(api_client, create_client_test_data, data):
     client_id = Client.objects.get(phone_number=79220009912).id
     url = reverse('client-detail-view', kwargs={'pk': client_id})
-    response = api_client.put(url, data={'tag': 'tag_new', 'time_zone': 'Europe/Moscow'})
+    response = api_client.put(url, data=data)
     assert response.status_code == status.HTTP_200_OK
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize('phone_number, tag, mobile_operator_code, time_zone', [
-    ('7922000991200', 'tag_1', '900', 'Asia/Omsk'),
-    ('79007886151', 'tag_1', '900', 'Asia/Unknown')])
-def test_client_put_400(api_client, create_client_test_data, phone_number, tag, mobile_operator_code, time_zone):
+@pytest.mark.parametrize('data', [
+    ({'tag': 'tag_new', 'time_zone': 'Europe/NewCity'}),
+    ({'phone_number': '7901788615100', 'tag': 'tag_1', 'mobile_operator_code': '901', 'time_zone': 'Asia/Omsk'}),
+    ({'phone_number': '79017886151', 'mobile_operator_code': '911'}),
+    ({'phone_number': '79881003340'}),
+    ({'mobile_operator_code': '933'})])
+def test_client_put_400(api_client, create_client_test_data, data):
     client_id = Client.objects.get(phone_number=79220009912).id
     url = reverse('client-detail-view', kwargs={'pk': client_id})
-    response = api_client.put(url, data={'phone_number': phone_number, 'tag': tag,
-                                         'mobile_operator_code': mobile_operator_code, 'time_zone': time_zone})
+    response = api_client.put(url, data=data)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 

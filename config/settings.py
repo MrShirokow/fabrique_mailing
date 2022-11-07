@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'django_crontab',
     'rest_framework',
     'drf_yasg',
+    'django_celery_results',
 
     'mailing_service',
 ]
@@ -161,3 +162,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'mailing_service/media')
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'

@@ -48,9 +48,8 @@ MAILING_SERVICE_URL = env('MAILING_SERVICE_URL')
 CONTENT_TYPE = env('CONTENT_TYPE')
 ACCEPT = env('ACCEPT')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG', default=False)
 
+DEBUG = env('DEBUG', default=False)
 ALLOWED_HOSTS = []
 
 
@@ -163,7 +162,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'mailing_service/media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CELERY_BROKER_URL = 'redis://127.0.0.1:16379/0'
+CELERY_BROKER_URL = 'redis://redis:6379/0'
 
 CELERY_RESULT_BACKEND = 'django-db'
 
@@ -172,6 +171,6 @@ CELERY_CACHE_BACKEND = 'default'
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': 'redis://127.0.0.1:16379/1',
+        'LOCATION': 'redis://redis:6379/1',
     }
 }

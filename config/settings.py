@@ -12,7 +12,9 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 import os
 import environ
+
 from pathlib import Path
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -53,8 +55,6 @@ DEBUG = env('DEBUG', default=False)
 ALLOWED_HOSTS = []
 
 
-# Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -66,13 +66,14 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'django_celery_results',
+    'django_celery_beat',
 
     'mailing_service',
 ]
 
-CRONJOBS = [
-    ('* */4 * * *', 'mailing_service.mailing.start')
-]
+# CRONJOBS = [
+#     ('* */4 * * *', 'mailing_service.mailing.start')
+# ]
 
 MIDDLEWARE = [
     # 'mailing_service.middlewares.api_secret_middleware.ApiSecretMiddleware',
@@ -164,7 +165,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CELERY_BROKER_URL = 'redis://redis:6379/0'
 
-CELERY_RESULT_BACKEND = 'django-db'
+# CELERY_RESULT_BACKEND = 'django-db'
 
 CELERY_CACHE_BACKEND = 'default'
 
@@ -175,4 +176,11 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
         'LOCATION': 'redis://redis:6379/1',
     }
+}
+
+CELERY_BEAT_SCHEDULE = {
+    'get_notifications': {
+        'task': 'mailing_service.tasks.get_notifications',
+        'schedule': crontab(minute='*/1'),
+    },
 }

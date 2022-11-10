@@ -1,6 +1,4 @@
-FROM python:3.10
-
-RUN apt-get -y update && apt-get install -y cron
+FROM python:3.10-slim-bullseye
 
 WORKDIR /usr/src/app/
 

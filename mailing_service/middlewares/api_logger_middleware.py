@@ -7,8 +7,8 @@ import mailing_service.logging.log_messages_creator as log
 from django.http import HttpRequest
 from rest_framework.response import Response
 
-logging.basicConfig(filename=pathlib.Path(__file__).resolve().parent.parent.joinpath('logging/logger.log'),
-                    format='%(levelname)s %(asctime)s %(message)s', level=logging.INFO)
+
+logger = logging.getLogger('mailing')
 
 
 class APILogMiddleware:
@@ -24,7 +24,7 @@ class APILogMiddleware:
         end = time.time()
         try:
             if request.path.startswith('/api/'):
-                logging.info(log.create_api_log_message(request, response, start, end))
-        except Exception:
-            pass
+                logger.info(log.create_api_log_message(request, response, start, end))
+        except Exception as e:
+            logger.warning(e)
         return response

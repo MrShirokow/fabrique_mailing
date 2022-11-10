@@ -71,9 +71,6 @@ INSTALLED_APPS = [
     'mailing_service',
 ]
 
-# CRONJOBS = [
-#     ('* */4 * * *', 'mailing_service.mailing.start')
-# ]
 
 MIDDLEWARE = [
     # 'mailing_service.middlewares.api_secret_middleware.ApiSecretMiddleware',
@@ -165,8 +162,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CELERY_BROKER_URL = 'redis://redis:6379/0'
 
-# CELERY_RESULT_BACKEND = 'django-db'
-
 CELERY_CACHE_BACKEND = 'default'
 
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
@@ -183,4 +178,30 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'mailing_service.tasks.get_notifications',
         'schedule': crontab(minute='*/1'),
     },
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'log_format': {
+            'format': '{levelname} {asctime} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'mailing_service/logging/logger.log',
+            'formatter': 'log_format',
+        }
+    },
+    'loggers': {
+        'mailing': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True
+        }
+    }
 }

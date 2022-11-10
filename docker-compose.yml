@@ -22,12 +22,23 @@ services:
   redis:
     container_name: notification_redis
     image: redis:alpine
-  celery:
-    container_name: notification_celery
+  celery_worker:
+    container_name: notification_celery_worker
     restart: always
     build:
       context: .
     command: celery -A config worker -l info
+    env_file: ./.env
+    depends_on:
+      - db
+      - redis
+      - app
+  celery_beat:
+    container_name: notification_celery_beat
+    restart: always
+    build:
+      context: .
+    command: celery -A config beat -l info
     env_file: ./.env
     depends_on:
       - db

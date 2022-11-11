@@ -3,11 +3,12 @@ from django.contrib import admin
 from mailing_service.models.client import Client
 from mailing_service.models.message import Message
 from mailing_service.models.notification import Notification
+from mailing_service.models.success_client import SuccessClient
 
 
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'start_datetime', 'end_datetime', 'text', 'mailing_filter', 'reached_numbers')
+    list_display = ('id', 'start_datetime', 'end_datetime', 'text', 'mailing_filter')
     list_display_links = ('id', 'text')
 
 
@@ -21,3 +22,9 @@ class ClientAdmin(admin.ModelAdmin):
 class MessageAdmin(admin.ModelAdmin):
     list_display = ('id', 'notification', 'client', 'created_at', 'is_sending')
     list_display_links = ('id', )
+
+
+@admin.register(SuccessClient)
+class SuccessClientAdmin(admin.ModelAdmin):
+    list_display = ('id', 'notification_id', 'client_id')
+    list_display_links = list_display

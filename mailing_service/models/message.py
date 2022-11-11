@@ -7,7 +7,7 @@ from mailing_service.models.notification import Notification
 class Message(models.Model):
     notification = models.ForeignKey(Notification, on_delete=models.CASCADE, related_name='messages')
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='messages')
-    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    created_at = models.DateTimeField(blank=True, null=True)
     is_sending = models.BooleanField(default=False)
 
     class Meta:

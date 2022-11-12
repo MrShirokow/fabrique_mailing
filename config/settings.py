@@ -162,6 +162,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CELERY_BROKER_URL = 'redis://redis:6379/0'
 
+CELERY_RESULT_BACKEND = 'django-db'
+
 CELERY_CACHE_BACKEND = 'default'
 
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
@@ -174,9 +176,9 @@ CACHES = {
 }
 
 CELERY_BEAT_SCHEDULE = {
-    'get_notifications': {
-        'task': 'mailing_service.tasks.get_notifications',
-        'schedule': crontab(minute='*/1'),
+    'mailing': {
+        'task': 'mailing_service.tasks.run_mailing',
+        'schedule': crontab(minute='*/2'),
     },
 }
 

@@ -119,7 +119,7 @@ class NotificationAPIView(APIView, BasicPagination):
         if not notification_serializer.is_valid():
             return Response(notification_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        notification_serializer.save(reached_numbers=[])
+        notification_serializer.save()
         return Response('notification was updated successfully', status=status.HTTP_200_OK)
 
     def delete(self, request: Request, pk: int, format=None) -> Response:

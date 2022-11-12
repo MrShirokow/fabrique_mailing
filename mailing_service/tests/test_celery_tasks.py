@@ -1,10 +1,11 @@
 import pytest
 import datetime
 
-from mailing_service import mailing
+from mailing_service import tasks
 from mailing_service.models.message import Message
 from mailing_service.models.client import Client
 from mailing_service.models.notification import Notification
+from mailing_service.models.success_client import SuccessClient
 
 
 @pytest.fixture
@@ -36,40 +37,64 @@ def mailing_test_data():
 
 @pytest.mark.django_db
 def test_mailing_get_notification(mailing_test_data):
-    notifications = mailing.get_notifications()
-    assert list(notifications) == mailing_test_data['notification_data'][:2]
+    notifications = tasks.get_notifications()
+    expected = [{
+        'id': notification.id, 
+        'text': notification.text, 
+        'mailing_filter': notification.mailing_filter
+    } for notification in mailing_test_data['notification_data'][:2]]
+    assert list(notifications) == expected
 
 
 @pytest.mark.django_db
 def test_mailing_get_clients(mailing_test_data):
-    clients = mailing.get_clients({'tag': 'tag_1', 'mobile_operator_code': '922'})
+    notification = mailing_test_data['notification_data'][1]
+    clients = tasks.get_clients(notification.mailing_filter, notification.id)
     expected_client = mailing_test_data['client_data'][0]
     assert list(clients) == [(expected_client.id, expected_client.phone_number)]
 
 
 @pytest.mark.django_db
-def test_mailing_create_messages(mailing_test_data):
-    messages = [Message(**{'notification': mailing_test_data['notification_data'][0],
-                           'client': mailing_test_data['client_data'][1],
-                           'is_sending': True}),
-                Message(**{'notification': mailing_test_data['notification_data'][1],
-                           'client': mailing_test_data['client_data'][0],
-                           'is_sending': True})]
-    mailing.create_messages(messages)
-    assert Message.objects.count() == 2
-    assert Message.objects.get(pk=messages[0].id)
-    assert Message.objects.get(pk=messages[1].id)
+@pytest.mark.parametrize('model_name', ['Message', 'SuccessClient'])
+def test_mailing_create_model_entries(mailing_test_data, model_name):
+    message_data = [
+        {
+            'notification': mailing_test_data['notification_data'][0],
+            'client': mailing_test_data['client_data'][1],
+            'is_sending': True
+        },
+        {
+            'notification': mailing_test_data['notification_data'][1],
+            'client': mailing_test_data['client_data'][0],
+            'is_sending': True
+        }
+    ]
+    success_clients_data = [
+        {
+            'notification_id_id': mailing_test_data['notification_data'][0].id,
+            'client_id_id': mailing_test_data['client_data'][1].id,
+        },
+        {
+            'notification_id_id': mailing_test_data['notification_data'][1].id,
+            'client_id_id': mailing_test_data['client_data'][0].id,
+        }
+    ]
+    data = {'Message': message_data, 'SuccessClient': success_clients_data}
+    models = {'Message': Message, 'SuccessClient': SuccessClient}
+    assert models[model_name].objects.count() == 0
+    tasks.create_model_entries(model_name, data[model_name])
+    assert models[model_name].objects.count() == 2
 
 
 def test_mailing_send_message():
-    response_ok = mailing.send_message(data={'id': 1, 'phone': 79635709980, 'text': 'Some Text'})
-    response_bad = mailing.send_message(data={'id': 2, 'phone': 79635709980, 'text': 'Some Text'})
-    assert response_ok.status_code == 200
-    assert response_bad.status_code == 400
+    status_ok, time = tasks.send_message(data={'id': 1, 'phone': 79635709980, 'text': 'Some Text'})
+    status_bad, time = tasks.send_message(data={'id': 2, 'phone': 79635709980, 'text': 'Some Text'})
+    assert status_ok == 200
+    assert status_bad == 400
 
 
-@pytest.mark.django_db
-def test_start_mailing(mailing_test_data):
-    assert Message.objects.count() == 0
-    mailing.start()
-    assert Message.objects.count() == 3
+# @pytest.mark.django_db
+# def test_run_mailing(mailing_test_data):
+#     assert Message.objects.count() == 0
+#     tasks.run_mailing()
+#     assert Message.objects.count() == 3

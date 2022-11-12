@@ -7,7 +7,7 @@ from celery import shared_task
 from celery.result import allow_join_result
 from datetime import datetime
 from rest_framework import status
-from django.db.models import Q, QuerySet
+from django.db.models import Q, QuerySet, Model
 
 import mailing_service.logging.log_messages_creator as log
 
@@ -18,7 +18,7 @@ from mailing_service.models.success_client import SuccessClient
 from config.settings import OPEN_API_TOKEN, MAILING_SERVICE_URL, ACCEPT, CONTENT_TYPE
 
 
-def get_notifications() -> QuerySet[dict[str]]:
+def get_notifications() -> QuerySet:
     """
     Get notifications for start mailing
     """
@@ -29,7 +29,7 @@ def get_notifications() -> QuerySet[dict[str]]:
     return notifications
 
 
-def get_clients(mailing_filter: dict, notification_id: int) -> QuerySet[tuple[int, int]]:
+def get_clients(mailing_filter: dict, notification_id: int) -> QuerySet:
     """
     Get clients for mailing by filter
     """
@@ -49,21 +49,21 @@ def get_clients(mailing_filter: dict, notification_id: int) -> QuerySet[tuple[in
     return clients
 
 
-@shared_task(ignore_result=True)
-def create_messages(messages: list):
+# @shared_task(ignore_result=True)
+def create_model_entries(model: Model, data: list):
     """
-    Create message records from input data
+    Create message entries from input data
     """ 
     batch_size = 100
-    message_iterator = (message for message in messages)
+    obj_iterator = (obj for obj in data)
     while True:
-        batch = list(islice(message_iterator, batch_size))
+        batch = list(islice(obj_iterator, batch_size))
         if not batch:
             break
-        Message.objects.bulk_create(batch, batch_size)
+        model.objects.bulk_create(batch, batch_size)
 
 
-@shared_task()
+@shared_task
 def send_message(data: dict) -> tuple[int, datetime]:
     """
     Send message and return response status and sending time
@@ -72,7 +72,7 @@ def send_message(data: dict) -> tuple[int, datetime]:
     response = requests.post(MAILING_SERVICE_URL, data=json.dumps(data), headers=headers)
     now = datetime.now()
     logging.info(log.create_mailing_log_message(response.request, response))
-    return response.status_code, now, data['phone']
+    return response.status_code, now
 
 
 @shared_task(ignore_result=True)
@@ -107,4 +107,6 @@ def run_mailing():
                 'is_sending': mailing_status,
                 'created_at': result[1]
             }))
-    create_messages.delay(messages)
+    # create_model_entries.delay(SuccessClient, success_clients)
+    create_model_entries(SuccessClient, success_clients)
+    create_model_entries(Message, messages)

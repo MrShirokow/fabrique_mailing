@@ -178,7 +178,7 @@ CACHES = {
 CELERY_BEAT_SCHEDULE = {
     'mailing': {
         'task': 'mailing_service.tasks.run_mailing',
-        'schedule': crontab(minute='*/2'),
+        'schedule': crontab(minute='*/10'),
     },
 }
 

@@ -8,6 +8,8 @@ services:
     volumes:
       - db_volume:/var/lib/postgresql/data
     env_file: ./.env
+    environment:
+      - TZ=Asia/Yekaterinburg
   app:
     restart: always
     container_name: notification_app
@@ -19,12 +21,16 @@ services:
     env_file: ./.env
     ports:
       - ${PORT}:8000
+    environment:
+      - TZ=Asia/Yekaterinburg
     depends_on:
       - db
   redis:
     restart: always
     container_name: notification_redis
     image: redis:alpine
+    environment:
+      - TZ=Asia/Yekaterinburg
   celery_worker:
     restart: always
     container_name: notification_celery_worker
@@ -32,6 +38,8 @@ services:
       context: .
     command: celery -A config worker -l info
     env_file: ./.env
+    environment:
+      - TZ=Asia/Yekaterinburg
     depends_on:
       - db
       - redis
@@ -43,6 +51,8 @@ services:
       context: .
     command: celery -A config beat -l info
     env_file: ./.env
+    environment:
+      - TZ=Asia/Yekaterinburg
     depends_on:
       - db
       - redis

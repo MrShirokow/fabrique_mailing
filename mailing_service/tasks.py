@@ -38,7 +38,7 @@ def get_clients(mailing_filter: dict, notification_id: int) -> QuerySet:
     query = SuccessClient.objects.filter(
         notification_id=notification_id
     ).values('client_id')
-    success_ids = tuple(client['client_id'] for client in query)
+    success_ids = {client['client_id'] for client in query}
 
     clients = Client.objects.all()
     if tag:

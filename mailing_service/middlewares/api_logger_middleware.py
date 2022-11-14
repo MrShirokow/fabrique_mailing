@@ -24,7 +24,9 @@ class APILogMiddleware:
         end = time.time()
         try:
             if request.path.startswith('/api/'):
-                logger.info(log.create_api_log_message(request, response, start, end))
+                logger.info(log.create_api_log_message(
+                    request, response, start, end
+                ))
         except Exception as e:
             logger.warning(e)
         return response

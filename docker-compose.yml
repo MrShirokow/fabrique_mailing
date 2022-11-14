@@ -36,7 +36,7 @@ services:
     container_name: notification_celery_worker
     build:
       context: .
-    command: celery -A config worker -l info
+    command: celery -A config worker -l info -c 8
     env_file: ./.env
     environment:
       - TZ=Asia/Yekaterinburg

@@ -8,12 +8,12 @@ from rest_framework.response import Response
 import mailing_service.serializers.message_stats as message_stats
 
 from mailing_service.pagination import BasicPagination
-from mailing_service.serializers.client import ClientSerializer
-from mailing_service.serializers.message import MessageSerializer
-from mailing_service.serializers.notification import NotificationSerializer
 from mailing_service.models.client import Client
 from mailing_service.models.message import Message
 from mailing_service.models.notification import Notification
+from mailing_service.serializers.client import ClientSerializer
+from mailing_service.serializers.message import MessageSerializer
+from mailing_service.serializers.notification import NotificationSerializer
 
 
 class ClientListAPIView(APIView, BasicPagination):
@@ -34,10 +34,16 @@ class ClientListAPIView(APIView, BasicPagination):
         """
         client_serializer = ClientSerializer(data=request.data)
         if not client_serializer.is_valid():
-            return Response(client_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                client_serializer.errors, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         client_serializer.save()
-        return Response('client was created successfully', status=status.HTTP_201_CREATED)
+        return Response(
+            'client was created successfully', 
+            status=status.HTTP_201_CREATED
+        )
 
 
 class ClientAPIView(APIView):
@@ -59,7 +65,10 @@ class ClientAPIView(APIView):
         client = get_object_or_404(Client, pk=pk)
         client_serializer = ClientSerializer(client, data=request.data, partial=True)
         if not client_serializer.is_valid():
-            return Response(client_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                client_serializer.errors, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         client_serializer.save()
         return Response('client was updated successfully', status=status.HTTP_200_OK)
@@ -70,7 +79,10 @@ class ClientAPIView(APIView):
         """
         client = get_object_or_404(Client, pk=pk)
         client.delete()
-        return Response('client was deleted successfully', status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            'client was deleted successfully', 
+            status=status.HTTP_204_NO_CONTENT
+        )
 
 
 class NotificationListAPIView(APIView, BasicPagination):
@@ -92,10 +104,16 @@ class NotificationListAPIView(APIView, BasicPagination):
         """
         notification_serializer = NotificationSerializer(data=request.data)
         if not notification_serializer.is_valid():
-            return Response(notification_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                notification_serializer.errors, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         notification_serializer.save()
-        return Response('notification was created successfully', status=status.HTTP_201_CREATED)
+        return Response(
+            'notification was created successfully', 
+            status=status.HTTP_201_CREATED
+        )
 
 
 class NotificationAPIView(APIView, BasicPagination):
@@ -115,12 +133,21 @@ class NotificationAPIView(APIView, BasicPagination):
         Update notification by id
         """
         notification = get_object_or_404(Notification, pk=pk)
-        notification_serializer = NotificationSerializer(notification, data=request.data, partial=True)
+        notification_serializer = NotificationSerializer(
+            notification, data=request.data, partial=True
+        )
+
         if not notification_serializer.is_valid():
-            return Response(notification_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                notification_serializer.errors, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         notification_serializer.save()
-        return Response('notification was updated successfully', status=status.HTTP_200_OK)
+        return Response(
+            'notification was updated successfully', 
+            status=status.HTTP_200_OK
+        )
 
     def delete(self, request: Request, pk: int, format=None) -> Response:
         """
@@ -128,7 +155,10 @@ class NotificationAPIView(APIView, BasicPagination):
         """
         notification = get_object_or_404(Notification, pk=pk)
         notification.delete()
-        return Response('notification was deleted successfully', status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            'notification was deleted successfully', 
+            status=status.HTTP_204_NO_CONTENT
+        )
 
 
 class MessageListByNotificationAPIView(APIView, BasicPagination):
@@ -154,8 +184,19 @@ class MessagesCountGroupByStatusAPIView(APIView):
         """
         Get message statistics
         """
-        queryset = Message.objects.values('notification_id', 'is_sending', 'notification__text')\
-                                  .annotate(count=Count('is_sending'))\
-                                  .values_list('notification_id', 'is_sending', 'count', 'notification__text')
+        queryset = Message.objects.values(
+            'notification_id', 
+            'is_sending', 
+            'notification__text'
+        ).annotate(
+            count=Count('is_sending')
+        ).values_list(
+            'notification_id', 
+            'is_sending', 
+            'count', 
+            'notification__text'
+        )
 
-        return Response(message_stats.serialize_stats(message_stats.get_stats_dict(queryset)))
+        return Response(
+            message_stats.serialize_stats(message_stats.get_stats_dict(queryset))
+        )

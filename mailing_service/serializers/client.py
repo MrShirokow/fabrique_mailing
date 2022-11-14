@@ -26,5 +26,7 @@ class ClientSerializer(serializers.ModelSerializer):
         mobile_operator_code = data.get('mobile_operator_code',
                                         get_default('mobile_operator_code', self.instance))
         if phone_number[1:4] != str(mobile_operator_code):
-            raise serializers.ValidationError({'mobile_operator_code': 'invalid value of mobile operator code'})
+            raise serializers.ValidationError({
+                'mobile_operator_code': 'invalid value of mobile operator code'
+            })
         return data

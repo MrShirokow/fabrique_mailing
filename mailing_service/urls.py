@@ -1,6 +1,13 @@
 from django.urls import re_path
-from mailing_service.views import ClientListAPIView, ClientAPIView, NotificationListAPIView, NotificationAPIView, \
-    MessageListByNotificationAPIView, MessagesCountGroupByStatusAPIView
+
+from mailing_service.views import (
+    ClientListAPIView, 
+    ClientAPIView, 
+    NotificationListAPIView, 
+    NotificationAPIView,
+    MessageListByNotificationAPIView, 
+    MessagesCountGroupByStatusAPIView
+)
 
 urlpatterns = [
     re_path(r'^clients/?$', ClientListAPIView.as_view(), name='client-list-view'),

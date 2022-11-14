@@ -1,7 +1,11 @@
 import hashlib
 import hmac
 
-from django.http import HttpResponseForbidden, HttpRequest, HttpResponse
+from django.http import (
+    HttpResponseForbidden,
+    HttpRequest, 
+    HttpResponse
+)
 
 from config.settings import API_SECRET
 

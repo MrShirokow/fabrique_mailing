@@ -16,12 +16,16 @@ class NotificationSerializer(serializers.ModelSerializer):
         if mailing_filter is None and self.partial and self.instance:
             return attrs
         elif not isinstance(mailing_filter, dict):
-            raise serializers.ValidationError({'mailing_filter': 'filter must be in format `key:value`'})
+            raise serializers.ValidationError({
+                'mailing_filter': 'filter must be in format `key:value`'
+            })
 
         tag = mailing_filter.get('tag')
         mobile_operator_code = mailing_filter.get('mobile_operator_code')
 
         if tag is None and mobile_operator_code is None:
-            raise serializers.ValidationError({'mailing_filter': 'filter must contain at least one parameter '
-                                                                 'from the list: [tag, mobile_operator_code]'})
+            raise serializers.ValidationError({
+                'mailing_filter': 'filter must contain at least one parameter '
+                                  'from the list: [tag, mobile_operator_code]'
+            })
         return attrs

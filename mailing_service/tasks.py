@@ -71,8 +71,16 @@ def send_message(data: dict) -> tuple[int, datetime]:
     """
     Send message and return response status and sending time
     """
-    headers = {'Content-type': CONTENT_TYPE, 'accept': ACCEPT, 'Authorization': OPEN_API_TOKEN}
-    response = requests.post(MAILING_SERVICE_URL, data=json.dumps(data), headers=headers)
+    headers = {
+        'Content-type': CONTENT_TYPE, 
+        'accept': ACCEPT, 
+        'Authorization': OPEN_API_TOKEN
+    }
+    response = requests.post(
+        MAILING_SERVICE_URL, 
+        data=json.dumps(data), 
+        headers=headers
+    )
     now = datetime.now()
     logging.info(log.create_mailing_log_message(response.request, response))
     return response.status_code, now
@@ -101,11 +109,13 @@ def run_mailing():
                     'notification_id': notification['id'],
                     'client_id': client_id,
                 })
+
             messages_data.append({
                 'notification_id': notification['id'],
                 'client_id': client_id,
                 'is_sending': mailing_status,
                 'created_at': result[1],
             })
+
     create_model_entries.delay('SuccessClient', success_clients_data)
     create_model_entries.delay('Message', messages_data)

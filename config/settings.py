@@ -151,14 +151,25 @@ USE_DEPRECATED_PYTZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'mailing_service/static')
 MEDIA_ULR = '/media/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'mailing_service/static')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'mailing_service/media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Cash config
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://redis:6379/1',
+    }
+}
+
+# Celery config
 
 CELERY_BROKER_URL = 'redis://redis:6379/0'
 
@@ -168,19 +179,14 @@ CELERY_CACHE_BACKEND = 'default'
 
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': 'redis://redis:6379/1',
-    }
-}
-
 CELERY_BEAT_SCHEDULE = {
     'mailing': {
         'task': 'mailing_service.tasks.run_mailing',
         'schedule': crontab(minute='*/10'),
     },
 }
+
+# Logging config
 
 LOGGING = {
     'version': 1,

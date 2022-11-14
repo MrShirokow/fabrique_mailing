@@ -1,6 +1,7 @@
 from django.db import models
-from mailing_service.models.notification import Notification
-from mailing_service.models.client import Client
+
+from .notification import Notification
+from .client import Client
 
 
 class SuccessClient(models.Model):

@@ -1,7 +1,7 @@
 from django.db import models
 
-from mailing_service.models.client import Client
-from mailing_service.models.notification import Notification
+from .client import Client
+from .notification import Notification
 
 
 class Message(models.Model):

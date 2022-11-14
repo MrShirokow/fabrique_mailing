@@ -1,4 +1,7 @@
 from django.db import models
+from django.db.models import Q
+
+from django.apps import apps
 
 
 class Notification(models.Model):
@@ -15,3 +18,10 @@ class Notification(models.Model):
 
     def __str__(self):
         return f'notification #{self.id}'
+
+    def save(self, *args, **kwargs):
+        model = apps.get_model('mailing_service', 'SuccessClient')
+        query = model.objects.filter(Q(notification=self.id))
+        if query:
+            query.delete()
+        super(Notification, self).save(*args, **kwargs)

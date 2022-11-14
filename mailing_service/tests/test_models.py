@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from mailing_service.models.client import Client
 from mailing_service.models.message import Message
 from mailing_service.models.notification import Notification
+from mailing_service.models.success_client import SuccessClient
 
 
 @pytest.mark.django_db
@@ -98,3 +99,26 @@ def test_message_model():
     assert message.client == client
     assert message.is_sending is True
     assert message.__str__() == f'message #{message.id}'
+
+
+@pytest.mark.django_db
+def test_success_client_model():
+    notification = Notification.objects.create(
+        start_datetime='2022-09-06 10:00:00',
+        end_datetime='2022-09-10 23:59:00',
+        text='Attention! Notification text!',
+        mailing_filter={'tag': 'tag_1', 'mobile_operator_code': 900}
+    )
+    client = Client.objects.create(
+        phone_number=79007886151,
+        tag='tag_1',
+        mobile_operator_code=900,
+        time_zone='Asia/Omsk'
+    )
+    success_client = SuccessClient.objects.create(
+        notification = notification,
+        client = client
+    )
+    assert SuccessClient.objects.count() == 1
+    assert success_client.notification == notification
+    assert success_client.client == client

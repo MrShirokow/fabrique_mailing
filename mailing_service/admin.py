@@ -26,5 +26,5 @@ class MessageAdmin(admin.ModelAdmin):
 
 @admin.register(SuccessClient)
 class SuccessClientAdmin(admin.ModelAdmin):
-    list_display = ('id', 'notification_id', 'client_id')
+    list_display = ('id', 'notification', 'client')
     list_display_links = list_display

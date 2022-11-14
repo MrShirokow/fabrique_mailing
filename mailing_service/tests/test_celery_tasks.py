@@ -71,12 +71,12 @@ def test_mailing_create_model_entries(mailing_test_data, model_name):
     ]
     success_clients_data = [
         {
-            'notification_id_id': mailing_test_data['notification_data'][0].id,
-            'client_id_id': mailing_test_data['client_data'][1].id,
+            'notification_id': mailing_test_data['notification_data'][0].id,
+            'client_id': mailing_test_data['client_data'][1].id,
         },
         {
-            'notification_id_id': mailing_test_data['notification_data'][1].id,
-            'client_id_id': mailing_test_data['client_data'][0].id,
+            'notification_id': mailing_test_data['notification_data'][1].id,
+            'client_id': mailing_test_data['client_data'][0].id,
         }
     ]
     data = {'Message': message_data, 'SuccessClient': success_clients_data}

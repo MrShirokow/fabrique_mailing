@@ -37,8 +37,8 @@ def get_clients(mailing_filter: dict, notification_id: int) -> QuerySet:
     mobile_operator_code = mailing_filter.get('mobile_operator_code')
     query = SuccessClient.objects.filter(
         notification_id=notification_id
-    ).values('client_id')
-    success_ids = {client['client_id'] for client in query}
+    ).values('client')
+    success_ids = {client['client'] for client in query}
 
     clients = Client.objects.all()
     if tag:
@@ -98,8 +98,8 @@ def run_mailing():
             if result[0] == status.HTTP_200_OK:
                 mailing_status = True
                 success_clients_data.append({
-                    'notification_id_id': notification['id'],
-                    'client_id_id': client_id,
+                    'notification_id': notification['id'],
+                    'client_id': client_id,
                 })
             messages_data.append({
                 'notification_id': notification['id'],

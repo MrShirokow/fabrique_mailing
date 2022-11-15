@@ -34,6 +34,7 @@ docker exec -it notification_app python manage.py createsuperuser
 DEBUG=True
 PORT=8000
 
+# Django database config
 POSTGRES_ENGINE=django.db.backends.postgresql_psycopg2
 POSTGRES_DB=my_login
 POSTGRES_USER=my_user
@@ -41,10 +42,14 @@ POSTGRES_PASSWORD=my_password
 POSTGRES_HOST=db
 POSTGRES_PORT=5432
 
+# Django secret key for config
 SECRET_KEY=django-insecure-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+# Secret key for API security  
 API_SECRET=my_api_key
 
+# JWT-token for using open API
 OPEN_API_TOKEN=my_jwt_token
+# Other config for open API
 MAILING_SERVICE_URL=https://probe.fbrq.cloud/v1/send/1
 CONTENT_TYPE=application/json
 ACCEPT=application/json

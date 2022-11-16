@@ -14,9 +14,13 @@ from mailing_service.tests.test_views_message_stats import general_test_data
 
 @pytest.fixture
 def test_data_for_message_stats():
-    return Message.objects.values('notification_id', 'is_sending', 'notification__text') \
-                          .annotate(count=Count('is_sending')) \
-                          .values_list('notification_id', 'is_sending', 'count', 'notification__text')
+    return Message.objects.values(
+        'notification_id', 
+        'is_sending', 
+        'notification__text'
+    ).annotate(
+        count=Count('is_sending')
+    ).values_list('notification_id', 'is_sending', 'count', 'notification__text')
 
 
 @pytest.mark.django_db
@@ -87,21 +91,27 @@ def test_message_serializer(general_test_data):
 def test_get_stats_dict(general_test_data, test_data_for_message_stats):
     data = message_stats.get_stats_dict(test_data_for_message_stats)
     expected_data = defaultdict(lambda: defaultdict(int), [
-        (general_test_data['notification_data'][0].id, defaultdict(int, {
-            True: 1,
-            'text': 'Attention! Notification text!'
-        })),
-        (general_test_data['notification_data'][1].id, defaultdict(int, {
-            True: 1,
-            'text': 'Some text for client'
-        }))
+        (
+            general_test_data['notification_data'][0].id, defaultdict(int, {
+                True: 1,
+                'text': 'Attention! Notification text!'
+            })
+        ),
+        (
+            general_test_data['notification_data'][1].id, defaultdict(int, {
+                True: 1,
+                'text': 'Some text for client'
+            })
+        )
     ])
     assert data == expected_data
 
 
 @pytest.mark.django_db
 def test_message_stats_serializer(general_test_data, test_data_for_message_stats):
-    data = message_stats.serialize_stats(message_stats.get_stats_dict(test_data_for_message_stats))
+    data = message_stats.serialize_stats(
+        message_stats.get_stats_dict(test_data_for_message_stats)
+    )
     expected_data = [
         {
             'notification': general_test_data['notification_data'][0].id,

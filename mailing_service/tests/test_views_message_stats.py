@@ -19,26 +19,47 @@ def api_client():
 
 @pytest.fixture
 def general_test_data():
-    notification_data = [Notification(**{'start_datetime': '2022-09-01 10:00:00',
-                                         'end_datetime': '2022-09-25 23:59:00',
-                                         'text': 'Attention! Notification text!',
-                                         'mailing_filter': {'tag': 'tag_1'}}),
-                         Notification(**{'start_datetime': '2022-09-08 10:00:00',
-                                         'end_datetime': '2022-09-20 23:59:00',
-                                         'text': 'Some text for client',
-                                         'mailing_filter': {'tag': 'tag_2', 'mobile_operator_code': '900'}})]
-    client_data = [Client(**{'phone_number': '79007886151', 'tag': 'tag_2',
-                             'mobile_operator_code': '900', 'time_zone': 'Europe/Moscow'}),
-                   Client(**{'phone_number': '79220009912', 'tag': 'tag_1',
-                             'mobile_operator_code': '922', 'time_zone': 'Asia/Omsk'})]
+    notification_data = [
+        Notification(
+            start_datetime='2022-09-01 10:00:00',
+            end_datetime='2022-09-25 23:59:00',
+            text='Attention! Notification text!',
+            mailing_filter={'tag': 'tag_1'}
+        ),
+        Notification(
+            start_datetime='2022-09-08 10:00:00',
+            end_datetime='2022-09-20 23:59:00',
+            text='Some text for client',
+            mailing_filter={'tag': 'tag_2', 'mobile_operator_code': '900'}
+        )
+    ]
+    client_data = [
+        Client(
+            phone_number='79007886151', 
+            tag='tag_2',
+            mobile_operator_code='900', 
+            time_zone='Europe/Moscow'
+        ),
+        Client(
+            phone_number='79220009912', 
+            tag='tag_1',
+            mobile_operator_code='922', 
+            time_zone='Asia/Omsk'
+        )
+    ]
     Client.objects.bulk_create(client_data)
     Notification.objects.bulk_create(notification_data)
-    msg_data = [Message(**{'notification': notification_data[0],
-                           'client': client_data[1],
-                           'is_sending': True}),
-                Message(**{'notification': notification_data[1],
-                           'client': client_data[0],
-                           'is_sending': True})]
+    msg_data = [
+        Message(
+            notification_id=notification_data[0].id,
+            client_id=client_data[1].id,
+            is_sending=True
+        ),
+        Message(
+            notification_id=notification_data[1].id,
+            client_id=client_data[0].id,
+            is_sending=True
+    )]
     Message.objects.bulk_create(msg_data)
     return {'notification_data': notification_data, 'client_data': client_data, 'msg_data': msg_data}
 
@@ -63,9 +84,18 @@ def test_message_list_by_notification_404(api_client, general_test_data):
 @pytest.mark.django_db
 def test_message_stats_view(api_client, general_test_data):
     url = reverse('message-stats-view')
-    queryset = Message.objects.values('notification_id', 'is_sending', 'notification__text') \
-                              .annotate(count=Count('is_sending')) \
-                              .values_list('notification_id', 'is_sending', 'count', 'notification__text')
+    queryset = Message.objects.values(
+        'notification_id', 
+        'is_sending', 
+        'notification__text'
+    ).annotate(
+        count=Count('is_sending')
+    ).values_list(
+        'notification_id', 
+        'is_sending', 
+        'count', 
+        'notification__text'
+    )
     serializer_data = serialize_stats(get_stats_dict(queryset))
     response = api_client.get(url)
     assert response.status_code == status.HTTP_200_OK

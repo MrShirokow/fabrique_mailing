@@ -27,18 +27,33 @@ def test_client_model_ok():
 
 @pytest.mark.django_db
 def test_client_unique_phone_number():
-    Client.objects.create(phone_number='79007886151', tag='tag_1',
-                          mobile_operator_code='900', time_zone='Asia/Yekaterinburg')
+    Client.objects.create(
+        phone_number='79007886151', 
+        tag='tag_1',
+        mobile_operator_code='900', 
+        time_zone='Asia/Yekaterinburg'
+    )
     with pytest.raises(IntegrityError):
-        Client.objects.create(phone_number='79007886151', tag='tag_2',
-                              mobile_operator_code='900', time_zone='Europe/Moscow')
+        Client.objects.create(
+            phone_number='79007886151', 
+            tag='tag_2',
+            mobile_operator_code='900', 
+            time_zone='Europe/Moscow'
+        )
 
 
 @pytest.mark.django_db
 @pytest.mark.parametrize('error, phone_number, tag, mobile_operator_code, time_zone', [
-    (ValidationError, '79001005070', 'tag_1', '900', 'Europe/Unknown'),
-    (DataError, '79001005070', 'tag_1', '9111', 'Europe/Moscow'),
-    (DataError, '7900100507080', 'tag_1', '900', 'Europe/Moscow')])
+    (
+        ValidationError, '79001005070', 'tag_1', '900', 'Europe/Unknown'
+    ),
+    (
+        DataError, '79001005070', 'tag_1', '9111', 'Europe/Moscow'
+    ),
+    (
+        DataError, '7900100507080', 'tag_1', '900', 'Europe/Moscow'
+    )
+])
 def test_client_model_with_error(error, phone_number, tag, mobile_operator_code, time_zone):
     with pytest.raises(error):
         Client.objects.create(
@@ -67,10 +82,35 @@ def test_notification_model():
 
 @pytest.mark.django_db
 @pytest.mark.parametrize('error, start_datetime, end_datetime, text, mailing_filter', [
-    (ValidationError, '2022-09-32 10:00:00', '2022-09-10 10:00:00', 'Some text', {'mobile_operator_code': 900}),
-    (ValidationError, '2022-09-10 10:00:00', '2022-09-32 10:00:00', 'Some text', {'tag': 'tag_1'}),
-    (IntegrityError, '2022-09-10 10:00:00', '2022-09-11 10:00:00', 'Some text', None),
-    (IntegrityError, '2022-09-10 10:00:00', '2022-09-11 10:00:00', None, {'tag': 'tag_1'})])
+    (
+        ValidationError, 
+        '2022-09-32 10:00:00', 
+        '2022-09-10 10:00:00', 
+        'Some text', 
+        {'mobile_operator_code': 900}
+    ),
+    (
+        ValidationError, 
+        '2022-09-10 10:00:00', 
+        '2022-09-32 10:00:00', 
+        'Some text', 
+        {'tag': 'tag_1'}
+    ),
+    (
+        IntegrityError, 
+        '2022-09-10 10:00:00', 
+        '2022-09-11 10:00:00', 
+        'Some text', 
+        None
+    ),
+    (
+        IntegrityError, 
+        '2022-09-10 10:00:00', 
+        '2022-09-11 10:00:00', 
+        None, 
+        {'tag': 'tag_1'}
+    )
+])
 def test_notification_model_with_error(error, start_datetime, end_datetime, text, mailing_filter):
     with pytest.raises(error):
         Notification.objects.create(
@@ -83,17 +123,23 @@ def test_notification_model_with_error(error, start_datetime, end_datetime, text
 
 @pytest.mark.django_db
 def test_message_model():
-    notification = Notification.objects.create(start_datetime='2022-09-06 10:00:00',
-                                               end_datetime='2022-09-10 23:59:00',
-                                               text='Attention! Notification text!',
-                                               mailing_filter={'tag': 'tag_1', 'mobile_operator_code': 900})
-    client = Client.objects.create(phone_number=79007886151,
-                                   tag='tag_1',
-                                   mobile_operator_code=900,
-                                   time_zone='Asia/Omsk')
-    message = Message.objects.create(notification=notification,
-                                     client=client,
-                                     is_sending=True)
+    notification = Notification.objects.create(
+        start_datetime='2022-09-06 10:00:00',
+        end_datetime='2022-09-10 23:59:00',
+        text='Attention! Notification text!',
+        mailing_filter={'tag': 'tag_1', 'mobile_operator_code': 900}
+    )
+    client = Client.objects.create(
+        phone_number=79007886151,
+        tag='tag_1',
+        mobile_operator_code=900,
+        time_zone='Asia/Omsk'
+    )
+    message = Message.objects.create(
+        notification=notification,
+        client=client,
+        is_sending=True
+    )
     assert Message.objects.count() == 1
     assert message.notification == notification
     assert message.client == client

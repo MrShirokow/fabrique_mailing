@@ -17,7 +17,6 @@ make run
 ```bash
 docker-compose build
 docker-compose up
-docker exec notification_app python manage.py migrate
 ```
 ## Create `superuser` for django admin
 ### with make

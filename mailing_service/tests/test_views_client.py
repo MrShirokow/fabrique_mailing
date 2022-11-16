@@ -15,10 +15,19 @@ def api_client():
 
 @pytest.fixture
 def client_test_data():
-    creating_data = [Client(**{'phone_number': '79007886151', 'tag': 'tag_1',
-                               'mobile_operator_code': '900', 'time_zone': 'Europe/Moscow'}),
-                     Client(**{'phone_number': '79220009912', 'tag': 'tag_2',
-                               'mobile_operator_code': '922', 'time_zone': 'Asia/Omsk'})]
+    creating_data = [
+        Client(
+            phone_number='79007886151', 
+            tag='tag_1',
+            mobile_operator_code='900', 
+            time_zone='Europe/Moscow'
+        ),
+        Client(
+            phone_number='79220009912', 
+            tag='tag_2',
+            mobile_operator_code='922', 
+            time_zone='Asia/Omsk'
+    )]
     Client.objects.bulk_create(creating_data)
     return creating_data
 
@@ -52,21 +61,45 @@ def test_client_detail_get_404(api_client, client_test_data):
 @pytest.mark.django_db
 def test_client_post_201(api_client):
     url = reverse('client-list-view')
-    creating_data = {'phone_number': '79007886151',
-                     'tag': 'tag_1',
-                     'mobile_operator_code': '900',
-                     'time_zone': 'Asia/Yekaterinburg', }
+    creating_data = {
+        'phone_number': '79007886151',
+        'tag': 'tag_1',
+        'mobile_operator_code': '900',
+        'time_zone': 'Asia/Yekaterinburg'
+    }
     response = api_client.post(url, data=creating_data)
     assert response.status_code == status.HTTP_201_CREATED
 
 
 @pytest.mark.django_db
 @pytest.mark.parametrize('data', [
-    ({'tag': 'tag_new', 'time_zone': 'Europe/Moscow'}),
-    ({'phone_number': '79017886151', 'mobile_operator_code': '901'}),
-    ({'phone_number': '7900788615100', 'tag': 'tag_1', 'mobile_operator_code': '900', 'time_zone': 'Asia/Omsk'}),
-    ({'phone_number': '79007886151', 'tag': 'tag_1', 'mobile_operator_code': '901', 'time_zone': 'Asia/Omsk'}),
-    ({'phone_number': '79017886151', 'tag': 'tag_1', 'mobile_operator_code': '901', 'time_zone': 'Asia/Unknown'})])
+    ({
+        'tag': 'tag_new', 
+        'time_zone': 'Europe/Moscow'
+    }),
+    ({
+        'phone_number': '79017886151', 
+        'mobile_operator_code': '901'
+    }),
+    ({
+        'phone_number': '7900788615100', 
+        'tag': 'tag_1', 
+        'mobile_operator_code': '900', 
+        'time_zone': 'Asia/Omsk'
+    }),
+    ({
+        'phone_number': '79007886151', 
+        'tag': 'tag_1', 
+        'mobile_operator_code': '901', 
+        'time_zone': 'Asia/Omsk'
+    }),
+    ({
+        'phone_number': '79017886151', 
+        'tag': 'tag_1', 
+        'mobile_operator_code': '901', 
+        'time_zone': 'Asia/Unknown'
+    })
+])
 def test_client_post_400(api_client, data):
     url = reverse('client-list-view')
     response = api_client.post(url, data=data)
@@ -75,10 +108,24 @@ def test_client_post_400(api_client, data):
 
 @pytest.mark.django_db
 @pytest.mark.parametrize('data', [
-    ({'tag': 'tag_new', 'time_zone': 'Europe/Moscow'}),
-    ({'phone_number': '79017886151', 'tag': 'tag_1', 'mobile_operator_code': '901', 'time_zone': 'Asia/Omsk'}),
-    ({'phone_number': '79017886151', 'mobile_operator_code': '901'}),
-    ({'time_zone': 'Asia/Yekaterinburg'})])
+    ({
+        'tag': 'tag_new', 
+        'time_zone': 'Europe/Moscow'
+    }),
+    ({
+        'phone_number': '79017886151', 
+        'tag': 'tag_1', 
+        'mobile_operator_code': '901', 
+        'time_zone': 'Asia/Omsk'
+    }),
+    ({
+        'phone_number': '79017886151', 
+        'mobile_operator_code': '901'
+    }),
+    ({
+        'time_zone': 'Asia/Yekaterinburg'
+    })
+])
 def test_client_put_200(api_client, client_test_data, data):
     client_id = client_test_data[0].id
     url = reverse('client-detail-view', kwargs={'pk': client_id})
@@ -88,11 +135,27 @@ def test_client_put_200(api_client, client_test_data, data):
 
 @pytest.mark.django_db
 @pytest.mark.parametrize('data', [
-    ({'tag': 'tag_new', 'time_zone': 'Europe/NewCity'}),
-    ({'phone_number': '7901788615100', 'tag': 'tag_1', 'mobile_operator_code': '901', 'time_zone': 'Asia/Omsk'}),
-    ({'phone_number': '79017886151', 'mobile_operator_code': '911'}),
-    ({'phone_number': '79881003340'}),
-    ({'mobile_operator_code': '933'})])
+    ({
+        'tag': 'tag_new', 
+        'time_zone': 'Europe/NewCity'
+    }),
+    ({
+        'phone_number': '7901788615100', 
+        'tag': 'tag_1', 
+        'mobile_operator_code': '901', 
+        'time_zone': 'Asia/Omsk'
+    }),
+    ({
+        'phone_number': '79017886151', 
+        'mobile_operator_code': '911'
+    }),
+    ({
+        'phone_number': '79881003340'
+    }),
+    ({
+        'mobile_operator_code': '933'
+    })
+])
 def test_client_put_400(api_client, client_test_data, data):
     client_id = client_test_data[0].id
     url = reverse('client-detail-view', kwargs={'pk': client_id})

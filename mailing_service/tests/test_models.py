@@ -9,7 +9,6 @@ from mailing_service.models.notification import Notification
 from mailing_service.models.success_client import SuccessClient
 
 
-@pytest.mark.django_db
 def test_client_model_ok():
     client = Client.objects.create(
         phone_number='79007886151',
@@ -25,7 +24,6 @@ def test_client_model_ok():
     assert client.__str__() == '79007886151'
 
 
-@pytest.mark.django_db
 def test_client_unique_phone_number():
     Client.objects.create(
         phone_number='79007886151', 
@@ -42,7 +40,6 @@ def test_client_unique_phone_number():
         )
 
 
-@pytest.mark.django_db
 @pytest.mark.parametrize('error, phone_number, tag, mobile_operator_code, time_zone', [
     (
         ValidationError, '79001005070', 'tag_1', '900', 'Europe/Unknown'
@@ -64,7 +61,6 @@ def test_client_model_with_error(error, phone_number, tag, mobile_operator_code,
         )
 
 
-@pytest.mark.django_db
 def test_notification_model():
     notification = Notification.objects.create(
         start_datetime='2022-09-06 10:00:00',
@@ -80,7 +76,6 @@ def test_notification_model():
     assert notification.__str__() == f'notification #{notification.id}'
 
 
-@pytest.mark.django_db
 @pytest.mark.parametrize('error, start_datetime, end_datetime, text, mailing_filter', [
     (
         ValidationError, 
@@ -121,7 +116,6 @@ def test_notification_model_with_error(error, start_datetime, end_datetime, text
         )
 
 
-@pytest.mark.django_db
 def test_message_model():
     notification = Notification.objects.create(
         start_datetime='2022-09-06 10:00:00',
@@ -147,7 +141,6 @@ def test_message_model():
     assert message.__str__() == f'message #{message.id}'
 
 
-@pytest.mark.django_db
 def test_success_client_model():
     notification = Notification.objects.create(
         start_datetime='2022-09-06 10:00:00',

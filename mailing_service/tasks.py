@@ -51,21 +51,6 @@ def get_clients(mailing_filter: dict, notification_id: int) -> QuerySet:
     return clients
 
 
-@shared_task(ignore_result=True)
-def create_model_entries(model_name: str, data: list):
-    """
-    Create model entries from list data
-    """
-    model = apps.get_model('mailing_service', model_name)
-    batch_size = 100
-    obj_iterator = (model(**obj) for obj in data)
-    while True:
-        batch = list(islice(obj_iterator, batch_size))
-        if not batch:
-            break
-        model.objects.bulk_create(batch, batch_size)
-
-
 @shared_task
 def send_message(data: dict) -> tuple[int, datetime]:
     """
@@ -84,6 +69,21 @@ def send_message(data: dict) -> tuple[int, datetime]:
     now = datetime.now()
     logging.info(log.create_mailing_log_message(response.request, response))
     return response.status_code, now
+
+
+@shared_task(ignore_result=True)
+def create_model_entries(model_name: str, data: list):
+    """
+    Create model entries from list data
+    """
+    model = apps.get_model('mailing_service', model_name)
+    batch_size = 100
+    obj_iterator = (model(**obj) for obj in data)
+    while True:
+        batch = list(islice(obj_iterator, batch_size))
+        if not batch:
+            break
+        model.objects.bulk_create(batch, batch_size)
 
 
 @shared_task(ignore_result=True)

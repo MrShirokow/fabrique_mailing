@@ -9,7 +9,6 @@ from mailing_service.models.message import Message
 from mailing_service.serializers.client import ClientSerializer
 from mailing_service.serializers.message import MessageSerializer
 from mailing_service.serializers.notification import NotificationSerializer
-from mailing_service.tests.test_views_message_stats import general_test_data
 
 
 @pytest.fixture

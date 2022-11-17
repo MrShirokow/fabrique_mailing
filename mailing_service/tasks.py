@@ -71,7 +71,7 @@ def send_message(data: dict) -> tuple[int, datetime]:
     return response.status_code, now
 
 
-@shared_task(ignore_result=True)
+@shared_task
 def create_model_entries(model_name: str, data: list):
     """
     Create model entries from list data
@@ -86,7 +86,7 @@ def create_model_entries(model_name: str, data: list):
         model.objects.bulk_create(batch, batch_size)
 
 
-@shared_task(ignore_result=True)
+@shared_task
 def run_mailing():
     """
     Start notification mailing and creating messages in database

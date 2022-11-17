@@ -36,4 +36,4 @@ bash:
 	docker exec -it notification_app /bin/bash
 
 test:
-	pytest -v -p no:warnings
+	pytest -v -p no:warnings --ds=config.settings

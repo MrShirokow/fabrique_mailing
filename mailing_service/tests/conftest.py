@@ -1,3 +1,4 @@
+import datetime
 import pytest
 
 from django.conf import settings
@@ -19,19 +20,11 @@ def pytest_configure():
     settings.DATABASES['default']['PASSWORD'] = 'postgres'
     settings.DATABASES['default']['PORT'] = '5432'
     settings.CELERY_TASK_ALWAYS_EAGER = True
-    settings.CELERY_BROKER_URL = 'redis://localhost:6379/0'
-    settings.CACHES = {
-        'default': {
-        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': 'redis://localhost:6379/1',
-        }
-    }
 
 
 @pytest.fixture(scope="session", autouse=True)
 def django_db_setup(django_db_setup):
     """Set up test db for testing"""
-    print('django_db_setup')
 
 
 @pytest.fixture(autouse=True)
@@ -133,3 +126,52 @@ def general_test_data():
         'client_data': client_data, 
         'msg_data': msg_data
     }
+
+
+@pytest.fixture
+def mailing_test_data():
+    start_datetime = (datetime.date.today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+    end_datetime = (datetime.date.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+    notification_data = [
+        Notification(
+            start_datetime=f'{start_datetime} 10:00:00',
+            end_datetime=f'{end_datetime} 23:59:59',
+            text='First Notification',
+            mailing_filter={'tag': 'tag_1'}
+        ),
+        Notification(
+            start_datetime=f'{start_datetime} 10:00:00',
+            end_datetime=f'{end_datetime} 23:59:59',
+            text='Second Notification',
+            mailing_filter={'tag': 'tag_1', 'mobile_operator_code': '922'}
+        ),
+        Notification(
+            start_datetime='2020-10-10 10:00:00',
+            end_datetime='2020-10-20 23:59:59',
+            text='It was sent',
+            mailing_filter={'mobile_operator_code': '900'}
+        )
+    ]
+    client_data = [
+        Client(
+            phone_number='79227886151', 
+            tag='tag_1',
+            mobile_operator_code='922', 
+            time_zone='Europe/Moscow'
+        ),
+        Client(
+            phone_number='79220009912', 
+            tag='tag_2',
+            mobile_operator_code='922', 
+            time_zone='Asia/Omsk'
+        ),
+        Client(
+            phone_number='79001459134', 
+            tag='tag_1',
+            mobile_operator_code='900', 
+            time_zone='Asia/Omsk'
+        )
+    ]
+    Client.objects.bulk_create(client_data)
+    Notification.objects.bulk_create(notification_data)
+    return {'notification_data': notification_data, 'client_data': client_data}

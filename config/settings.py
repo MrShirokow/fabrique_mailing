@@ -62,7 +62,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_crontab',
     'rest_framework',
     'drf_yasg',
     'django_celery_results',
@@ -213,3 +212,7 @@ LOGGING = {
         }
     }
 }
+
+# pytest
+
+PYTEST_PLUGINS='celery.contrib.pytest'

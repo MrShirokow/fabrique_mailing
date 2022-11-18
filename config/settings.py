@@ -52,7 +52,7 @@ ACCEPT = env('ACCEPT')
 
 
 DEBUG = env('DEBUG', default=False)
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 INSTALLED_APPS = [
@@ -149,7 +149,7 @@ USE_DEPRECATED_PYTZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 MEDIA_ULR = '/media/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'mailing_service/static')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'mailing_service/media')

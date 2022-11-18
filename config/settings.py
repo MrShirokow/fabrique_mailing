@@ -151,8 +151,8 @@ USE_DEPRECATED_PYTZ = True
 
 STATIC_URL = '/static/'
 MEDIA_ULR = '/media/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'mailing_service/static')
-MEDIA_ROOT = os.path.join(BASE_DIR, 'mailing_service/media')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

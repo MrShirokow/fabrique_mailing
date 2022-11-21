@@ -72,7 +72,6 @@ INSTALLED_APPS = [
 
 
 MIDDLEWARE = [
-    # 'mailing_service.middlewares.api_secret_middleware.ApiSecretMiddleware',
     'mailing_service.middlewares.api_logger_middleware.APILogMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -212,7 +211,3 @@ LOGGING = {
         }
     }
 }
-
-# pytest
-
-PYTEST_PLUGINS='celery.contrib.pytest'

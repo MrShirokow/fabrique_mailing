@@ -1,4 +1,3 @@
-import pathlib
 import time
 import logging
 
@@ -28,5 +27,11 @@ class APILogMiddleware:
                     request, response, start, end
                 ))
         except Exception as e:
-            logger.warning(e)
+            logger.warning(
+                {
+                    'method': request.method,
+                    'path': request.path,
+                    'exception': e
+                }
+            )
         return response

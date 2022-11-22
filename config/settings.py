@@ -191,7 +191,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'log_format': {
-            'format': '{levelname} {asctime} {message}',
+            'format': '[{levelname} {asctime}] {message}',
             'style': '{',
         },
     },

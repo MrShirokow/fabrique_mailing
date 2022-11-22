@@ -18,6 +18,9 @@ from mailing_service.models.success_client import SuccessClient
 from config.settings import OPEN_API_TOKEN, MAILING_SERVICE_URL, ACCEPT, CONTENT_TYPE
 
 
+logger = logging.getLogger('mailing')
+
+
 def get_notifications() -> QuerySet:
     """
     Get notifications for start mailing
@@ -67,7 +70,7 @@ def send_message(data: dict) -> tuple[int, datetime]:
         headers=headers
     )
     now = datetime.now()
-    logging.info(log.create_mailing_log_message(response.request, response))
+    logger.info(log.create_mailing_log_message(response.request, response))
     return response.status_code, now
 
 

@@ -16,8 +16,9 @@ services:
     volumes:
       - static_volume:/usr/src/app/static
       - media_volume:/usr/src/app/media
+      - ${PWD}/mailing_service/logging/logger.log:/usr/src/app/mailing_service/logging/logger.log
     build: .
-    command: bash -c "python manage.py migrate & python manage.py collectstatic & gunicorn -w 3 --chdir . config.wsgi —bind 0.0.0.0:8000"
+    command: bash -c "python manage.py migrate & python manage.py collectstatic --noinput & gunicorn -w 3 --chdir . config.wsgi —bind 0.0.0.0:8000"
     env_file: ./.env
     ports:
       - ${PORT}:8000
@@ -37,6 +38,8 @@ services:
     build:
       context: .
     command: celery -A config worker -l info
+    volumes:
+      - ${PWD}/mailing_service/logging/logger.log:/usr/src/app/mailing_service/logging/logger.log
     env_file: ./.env
     environment:
       - TZ=Asia/Yekaterinburg
@@ -50,6 +53,8 @@ services:
     build:
       context: .
     command: celery -A config beat -l info
+    volumes:
+      - ${PWD}/mailing_service/logging/logger.log:/usr/src/app/mailing_service/logging/logger.log
     env_file: ./.env
     environment:
       - TZ=Asia/Yekaterinburg
@@ -62,6 +67,7 @@ services:
     build: ./nginx/
     container_name: mailing_nginx
     volumes:
+      - ${PWD}/mailing_service/logging/logger.log:/usr/src/app/mailing_service/logging/logger.log
       - static_volume:/usr/src/app/static
       - media_volume:/usr/src/app/media
     ports:

@@ -65,5 +65,5 @@ make test
 ```
 ### run without make
 ```bash
-pytest -v -p no:warnings
+pytest -v -p no:warnings --ds=config.settings --cov=. --cov-report=html
 ```

@@ -25,7 +25,7 @@ make superuser
 ```
 ### without make
 ```bash
-docker exec -it notification_app python manage.py createsuperuser
+docker exec -it mailing_app python manage.py createsuperuser
 ```
 
 ## .env file example:
